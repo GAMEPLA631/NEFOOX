@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEFOOX - Modern GlassCybrek Movie Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Rajdhani & Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Oficiálne YouTube API pre detekciu obmedzení -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030204;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(229, 9, 20, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.12) 0, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.04) 0, transparent 70%);
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .cyber-font {
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Glassmorphism panel - Netflix styl */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        .glass-panel-heavy {
+            background: rgba(8, 8, 10, 0.94);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(229, 9, 20, 0.25);
+            box-shadow: 0 0 50px rgba(229, 9, 20, 0.15);
+        }
+
+        /* Netflix-style Neon Red glows */
+        .glow-red {
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+        }
+        
+        .glow-text-red {
+            text-shadow: 0 0 12px rgba(229, 9, 20, 0.8);
+        }
+
+        .glow-text-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030204;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1c1917;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e50914;
+        }
+
+        /* Netflix row horizontal scroll wrapper */
+        .netflix-row-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none; /* Hide scrollbars for Firefox */
+        }
+        .netflix-row-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbars for Chrome/Safari */
+        }
+
+        /* Netflix card scaling with premium cyberpunk shadows */
+        .netflix-card {
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transform-origin: center;
+        }
+        .netflix-card:hover {
+            transform: scale(1.08) translateY(-6px);
+            z-index: 40;
+            border-color: rgba(229, 9, 20, 0.6);
+            box-shadow: 0 12px 24px rgba(229, 9, 20, 0.35);
+        }
+
+        /* Grid Background simulation */
+        .cyber-grid {
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="cyber-grid min-h-screen flex flex-col pb-16">
+
+    <!-- Horná navigácia (Premium Netflix Bar) -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-white/5 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center gap-4">
+                <div class="relative cursor-pointer" onclick="location.reload()">
+                    <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 blur opacity-70"></div>
+                    <div class="relative bg-black px-5 py-1.5 rounded-md border border-red-600/35">
+                        <span class="cyber-font text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-red-700 glow-text-red">NEFOOX</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-[9px] text-red-500 font-mono tracking-widest uppercase bg-red-950/30 border border-red-500/20 px-2 py-0.5 rounded">PUBLIC NETFLIX v3.2</span>
+                </div>
+            </div>
+
+            <!-- Prepojenie na reálne DB -->
+            <div class="flex items-center gap-4 text-[10px] font-mono">
+                <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-red-500/20">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-slate-400">IDB (Local):</span>
+                    <span class="text-red-400 font-bold" id="db-local-status">Aktívna</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-cyan-500/20 cursor-pointer hover:border-cyan-400 transition-colors" onclick="forceResetCloudDb()" title="Kliknite pre manuálne prepojenie a synchronizáciu cloudu">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" id="cloud-indicator-dot"></span>
+                    <span class="text-slate-400">Cloud DB:</span>
+                    <span class="text-cyan-400 font-bold" id="db-cloud-status">Pripájanie...</span>
+                    <i class="fa-solid fa-arrows-rotate text-cyan-500 ml-1 hover:rotate-180 transition-transform duration-500"></i>
+                </div>
+            </div>
+
+            <!-- Užívateľská sekcia -->
+            <div class="flex items-center gap-3" id="auth-zone">
+                <!-- Generované cez JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Masívny Netflix-style Hero Billboard -->
+    <header class="relative w-full max-w-7xl mx-auto px-4 md:px-6 mb-12">
+        <div class="relative h-[320px] md:h-[480px] rounded-3xl overflow-hidden border border-white/5 shadow-2xl">
+            <!-- Background Image Overlay -->
+            <div class="absolute inset-0 bg-cover bg-center transition-all duration-700" id="hero-bg" style="background-image: linear-gradient(to top, #030204 10%, rgba(3,2,4,0.4) 60%, rgba(3,2,4,0.8) 100%), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1470&auto=format&fit=crop');"></div>
+            
+            <!-- Hero Content -->
+            <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-12 z-10">
+                <span class="text-red-500 font-mono text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-fire animate-pulse"></i> Najpopulárnejší trhák dňa
+                </span>
+                <h1 class="cyber-font text-4xl md:text-6xl font-black text-white uppercase tracking-tight leading-none mb-3 glow-text-red" id="hero-title">Cyberpunk: Edgerunners</h1>
+                <p class="text-slate-300 text-xs md:text-sm max-w-2xl font-light mb-6 leading-relaxed line-clamp-3 md:line-clamp-none" id="hero-desc">
+                    Vstúp do ulíc Night City, kde prežívajú len tí najodvážnejší s najrýchlejším kyberwarom. Sleduj príbeh Davida Martineza, ktorý sa rozhodol obetovať všetko, aby sa stal legendárnym Edgerunnerom.
+                </p>
+                
+                <div class="flex flex-wrap gap-4">
+                    <button id="hero-play-btn" onclick="" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 shadow-lg glow-red hover:scale-105 transition-all">
+                        <i class="fa-solid fa-play text-sm"></i> Prehrať Teraz
+                    </button>
+                    <button onclick="scrollToSelection()" class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-xl text-xs md:text-sm uppercase tracking-wider border border-white/15 hover:border-white/30 transition-all">
+                        <i class="fa-solid fa-list-ul"></i> Zobraziť knižnicu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hlavný kontajner -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- PRAVÝ PANEL: Netflix Knižnica a Riadky s filmami -->
+        <section class="lg:col-span-8 flex flex-col gap-10">
+            
+            <!-- Hráč videa (Zobrazí sa pri spustení) -->
+            <div id="video-theater-wrapper" class="hidden glass-panel-heavy rounded-3xl p-5 border border-red-500/40 overflow-hidden relative">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 pb-2 border-b border-white/5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                        <span id="playing-title" class="cyber-font text-lg font-bold text-red-500 truncate max-w-[280px] md:max-w-[450px]">Prehrávam film...</span>
+                    </div>
+                    
+                    <!-- Prehrávač - Výber zdroja (Bypass Prepínač) -->
+                    <div class="flex items-center gap-2 bg-black/60 p-1 rounded-xl border border-white/10">
+                        <button id="btn-player-standard" onclick="switchPlayerSource('standard')" class="px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all bg-red-600 text-white">
+                            Standard
+                        </button>
+                        <button id="btn-player-bypass" onclick="switchPlayerSource('bypass')" class="px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-user-secret mr-1"></i> Cyber Bypass 🚀
+                        </button>
+                    </div>
+
+                    <button onclick="closeTheater()" class="text-slate-400 hover:text-white bg-white/5 hover:bg-red-950/20 px-3 py-1.5 rounded-lg border border-white/10 text-xs transition-colors self-end md:self-auto">
+                        <i class="fa-solid fa-xmark mr-1"></i> Zatvoriť kino
+                    </button>
+                </div>
+                
+                <div class="relative aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 shadow-inner">
+                    <div id="youtube-iframe-container" class="w-full h-full">
+                        <!-- Generovaný YouTube iframe pomocou YouTube API alebo Proxy Bypass -->
+                    </div>
+
+                    <!-- Detekcia Chyby 153 / Chyby obmedzenia prehrávania autorom -->
+                    <div id="error-153-overlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
+                        <div class="max-w-md space-y-4">
+                            <div class="w-16 h-16 rounded-full bg-red-600/20 border border-red-500 flex items-center justify-center text-red-500 text-3xl mx-auto">
+                                <i class="fa-solid fa-user-secret animate-bounce"></i>
+                            </div>
+                            <h3 class="cyber-font text-xl md:text-2xl font-black text-white uppercase tracking-wider glow-text-red">Spustená ochrana / Chyba 153</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed font-mono">
+                                Tento autor zakázal embedding videa na štandardných weboch. Aktivovali sme pre teba špeciálny premostenú dešifrovanú linku, ktorá tento zákaz oklame.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                                <button onclick="switchPlayerSource('bypass')" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 hover:scale-105 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-cyan-500/25 transition-all">
+                                    <i class="fa-solid fa-bolt"></i> Spustiť cez Cyber Bypass (Nezablokované)
+                                </button>
+                                <a id="error-direct-youtube-link" href="#" target="_blank" class="inline-flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-slate-300 font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-widest border border-white/10 transition-all">
+                                    <i class="fa-brands fa-youtube text-red-500"></i> Na YouTube
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spodný varovný panel -->
+                <div class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-amber-500/20 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono">
+                    <div class="space-y-1">
+                        <span class="text-amber-400 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i> Zlyháva prehrávanie videa?
+                        </span>
+                        <p class="text-slate-400">Použi prepínač "Cyber Bypass" hore na lište videa. Načíta sa dekódovaný proxy stream nezávislý od obmedzení YouTube.</p>
+                    </div>
+                    <a id="direct-youtube-link" href="#" target="_blank" class="w-full md:w-auto bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl text-center text-slate-200 border border-white/15 transition-all text-xs flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-youtube text-red-500"></i> Pozerať originál
+                    </a>
+                </div>
+            </div>
+
+            <!-- KNIŽNICA ROW 1: Populárne na NEFOOX -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="cyber-font text-2xl font-black text-white uppercase tracking-wider border-l-4 border-red-600 pl-3 glow-text-red">Populárne na NEFOOX</h2>
+                    <div class="flex gap-1.5">
+                        <button onclick="scrollRow('row-trending', -1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="scrollRow('row-trending', 1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="netflix-row-container gap-4 py-2" id="row-trending">
+                    <!-- Filmy vygenerované cez JS -->
+                </div>
+            </div>
+
+            <!-- KNIŽNICA ROW 2: Sci-Fi & Cyberpunk -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="cyber-font text-2xl font-black text-white uppercase tracking-wider border-l-4 border-cyan-500 pl-3 glow-text-cyan">Sci-Fi & Cyberpunk</h2>
+                    <div class="flex gap-1.5">
+                        <button onclick="scrollRow('row-scifi', -1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="scrollRow('row-scifi', 1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="netflix-row-container gap-4 py-2" id="row-scifi">
+                    <!-- Filmy vygenerované cez JS -->
+                </div>
+            </div>
+
+            <!-- KNIŽNICA ROW 3: Prémiová filmotéka -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="cyber-font text-2xl font-black text-rose-500 uppercase tracking-wider border-l-4 border-rose-500 pl-3">👑 Iba Pre Premium Členov</h2>
+                    <div class="flex gap-1.5">
+                        <button onclick="scrollRow('row-premium', -1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="scrollRow('row-premium', 1)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white border border-white/5 transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="netflix-row-container gap-4 py-2" id="row-premium">
+                    <!-- Filmy vygenerované cez JS -->
+                </div>
+            </div>
+
+            <!-- PREDPLATNÉ SEKČNÉ BALÍKY (6 BALÍKOV) -->
+            <div id="premium-packages-section" class="glass-panel rounded-3xl p-6 md:p-8 border border-white/5">
+                <div class="mb-8 text-center">
+                    <span class="text-xs text-red-500 font-mono uppercase tracking-widest bg-red-950/20 px-3 py-1 border border-red-500/25 rounded-md">NEFOOX Premium Linka</span>
+                    <h2 class="cyber-font text-3xl font-black text-white uppercase tracking-wide mt-3 glow-text-red">6 Kybernetických Predplatných Balíkov</h2>
+                    <p class="text-xs text-slate-400 mt-2 max-w-xl mx-auto">Zadaj dáta do bezpečnej brány, aktivuj svoj prémiový balíček a sleduj zoznam kedykoľvek.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Balík 1 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 hover:border-red-500/25 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest bg-red-950/40 px-2 py-0.5 rounded border border-red-500/20">Úroveň 1</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">Basic Cypher</h4>
+                            <p class="text-xs text-slate-400 mt-1">Sledovanie prémiovej databázy v SD kvalite.</p>
+                            <div class="text-2xl font-black text-red-500 mt-3 font-mono">1.99 € <span class="text-xs text-slate-500 font-normal">/ 30 dní</span></div>
+                        </div>
+                        <button onclick="initiatePayment(1, 1.99, 'Basic Cypher', 30)" class="mt-5 w-full bg-red-600 hover:bg-red-700 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow hover:shadow-red-500/10">Kúpiť balík</button>
+                    </div>
+                    <!-- Balík 2 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 hover:border-red-500/25 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest bg-red-950/40 px-2 py-0.5 rounded border border-red-500/20">Úroveň 2</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">Standard Screen</h4>
+                            <p class="text-xs text-slate-400 mt-1">Prehrávanie vo FullHD s rýchlejším načítaním.</p>
+                            <div class="text-2xl font-black text-red-500 mt-3 font-mono">4.99 € <span class="text-xs text-slate-500 font-normal">/ 90 dní</span></div>
+                        </div>
+                        <button onclick="initiatePayment(2, 4.99, 'Standard Screen', 90)" class="mt-5 w-full bg-red-600 hover:bg-red-700 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow hover:shadow-red-500/10">Kúpiť balík</button>
+                    </div>
+                    <!-- Balík 3 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-red-500/20 hover:border-red-500/40 transition-all flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-red-600 text-[9px] text-white font-mono uppercase font-bold px-3 py-1 rounded-bl-xl shadow-md">Najpopulárnejší</div>
+                        <div>
+                            <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest bg-red-950/50 px-2 py-0.5 rounded border border-red-500/30">Úroveň 3</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">Ultra Streamer</h4>
+                            <p class="text-xs text-slate-400 mt-1">4K UHD kvalita s holografickým prenosom.</p>
+                            <div class="text-2xl font-black text-red-500 mt-3 font-mono">8.99 € <span class="text-xs text-slate-500 font-normal">/ 180 dní</span></div>
+                        </div>
+                        <button onclick="initiatePayment(3, 8.99, 'Ultra Streamer', 180)" class="mt-5 w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow glow-red">Kúpiť balík</button>
+                    </div>
+                    <!-- Balík 4 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 hover:border-red-500/25 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest bg-red-950/40 px-2 py-0.5 rounded border border-red-500/20">Úroveň 4</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">VIP Hologram</h4>
+                            <p class="text-xs text-slate-400 mt-1">Celoročné priority pásmo bez obmedzení.</p>
+                            <div class="text-2xl font-black text-red-500 mt-3 font-mono">14.99 € <span class="text-xs text-slate-500 font-normal">/ 365 dní</span></div>
+                        </div>
+                        <button onclick="initiatePayment(4, 14.99, 'VIP Hologram', 365)" class="mt-5 w-full bg-red-600 hover:bg-red-700 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow hover:shadow-red-500/10">Kúpiť balík</button>
+                    </div>
+                    <!-- Balík 5 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 hover:border-red-500/25 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] font-mono text-red-400 uppercase tracking-widest bg-red-950/40 px-2 py-0.5 rounded border border-red-500/20">Úroveň 5</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">Matrix Master</h4>
+                            <p class="text-xs text-slate-400 mt-1">730-dňová nepretržitá brána k databázam.</p>
+                            <div class="text-2xl font-black text-red-500 mt-3 font-mono">24.99 € <span class="text-xs text-slate-500 font-normal">/ 730 dní</span></div>
+                        </div>
+                        <button onclick="initiatePayment(5, 24.99, 'Matrix Master', 730)" class="mt-5 w-full bg-red-600 hover:bg-red-700 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow hover:shadow-red-500/10">Kúpiť balík</button>
+                    </div>
+                    <!-- Balík 6 -->
+                    <div class="glass-panel rounded-2xl p-5 border border-cyan-500/20 hover:border-cyan-500/40 transition-all flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-cyan-500 text-[9px] text-slate-950 font-mono uppercase font-black px-3 py-1 rounded-bl-xl shadow-md">DOŽIVOTNÝ</div>
+                        <div>
+                            <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-widest bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/20">Úroveň 6</span>
+                            <h4 class="cyber-font text-lg font-bold text-slate-200 mt-2">Nefoox Immortal</h4>
+                            <p class="text-xs text-slate-400 mt-1">Prepojenie so serverom na 5 rokov bez ďalších platieb.</p>
+                            <div class="text-2xl font-black text-cyan-400 mt-3 font-mono">49.99 € <span class="text-xs text-slate-500 font-normal">/ 5 rokov</span></div>
+                        </div>
+                        <button onclick="initiatePayment(6, 49.99, 'Nefoox Immortal', 1825)" class="mt-5 w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-xs font-mono font-bold text-white py-2.5 rounded-lg transition-all shadow hover:shadow-cyan-400/15">Kúpiť balík</button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- BOČNÝ PANEL: Užívateľ a ovládacie centrum (Zaberá 4 stĺpce) -->
+        <aside class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- PRÉMIOVÝ STATUS WIDGET S ODPOČÍTAVANÍM -->
+            <div class="glass-panel rounded-2xl p-6 border-l-4 border-l-red-600 relative overflow-hidden">
+                <div class="absolute -right-12 -top-12 w-28 h-28 bg-red-600/10 rounded-full blur-2xl"></div>
+                <h3 class="cyber-font text-xl text-slate-200 font-bold tracking-wide uppercase mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-crown text-amber-500"></i> Moje Premium Spojenie
+                </h3>
+                <div id="premium-info-box" class="space-y-4">
+                    <!-- Načítané cez JS z IndexedDB -->
+                </div>
+            </div>
+
+            <!-- PRIDANIE NOVÉHO FILMU (VEREJNÝ LINK) -->
+            <div class="glass-panel rounded-2xl p-6 border border-white/5 relative">
+                <div class="absolute top-3 right-3 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-500/30 text-[9px] text-cyan-400 font-mono">Global Sync</div>
+                <h3 class="cyber-font text-xl text-cyan-400 font-bold tracking-wide uppercase mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-square-plus"></i> Nahrať film do Cloudu
+                </h3>
+                
+                <form id="add-video-form" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5">Názov Filmu / Videa</label>
+                        <input type="text" id="video-title" required placeholder="napr. Blade Runner 2049 Trailer" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5">YouTube URL adresa</label>
+                        <input type="url" id="video-url" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-500 transition-colors">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5">Kategória / Žáner</label>
+                            <select id="video-category" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-red-500">
+                                <option value="Trending">Trending</option>
+                                <option value="Sci-Fi">Sci-Fi</option>
+                                <option value="Cyberpunk">Cyberpunk</option>
+                                <option value="Akčný">Akčný</option>
+                                <option value="Dokument">Dokumentárny</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col justify-end pb-1.5">
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <input type="checkbox" id="video-premium-only" class="accent-red-600 h-4 w-4 rounded">
+                                <span class="text-[10px] text-red-400 font-mono">Premium Only 👑</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 px-4 rounded-xl text-xs uppercase tracking-wider shadow hover:shadow-cyan-400/25 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i> Odoslať verejnosti
+                    </button>
+                </form>
+            </div>
+
+            <!-- TRANSAKČNÝ LOG (Z INDEXEDDB) -->
+            <div class="glass-panel rounded-2xl p-6 border border-white/5 flex-1 flex flex-col max-h-[350px]">
+                <h3 class="cyber-font text-lg text-red-500 font-bold tracking-wide uppercase mb-3 flex items-center justify-between">
+                    <span><i class="fa-solid fa-file-invoice-dollar mr-1"></i> Lokálny Archív Platieb</span>
+                    <span class="text-[10px] bg-red-950/40 text-red-400 font-mono px-2 py-0.5 rounded border border-red-500/20" id="tx-count">0 tx</span>
+                </h3>
+                <div class="overflow-y-auto space-y-2.5 pr-1 flex-1 text-xs font-mono" id="transactions-log">
+                    <!-- Naplnené dynamicky z IndexedDB -->
+                </div>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- SECURE PLATOBNÁ BRÁNA S PRESNE 30 POLIAMI (MODAL) -->
+    <div id="payment-gateway-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-panel-heavy rounded-3xl w-full max-w-4xl p-6 md:p-8 max-h-[92vh] overflow-y-auto relative border border-red-500/30 shadow-2xl">
+            
+            <div class="flex justify-between items-center border-b border-red-500/20 pb-4 mb-6">
+                <div>
+                    <span class="text-[10px] text-red-500 font-mono tracking-widest uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved"></i> Zabezpečená platobná brána NEFOOX-PAY
+                    </span>
+                    <h2 class="cyber-font text-2xl font-black text-white uppercase tracking-wider">Autorizácia licencovaného prenosu</h2>
+                </div>
+                <div class="bg-red-950/40 border border-red-500/30 px-4 py-2 rounded-xl text-right">
+                    <div class="text-[9px] text-slate-400 font-mono uppercase">Zvolený Balíček:</div>
+                    <div id="selected-pkg-name" class="text-sm font-black text-red-500 cyber-font">Neznámy</div>
+                    <div id="selected-pkg-price" class="text-xs text-cyan-400 font-mono font-bold">0.00 €</div>
+                </div>
+            </div>
+
+            <form id="payment-form" class="space-y-6">
+                
+                <!-- SEKCE A: OSOBNÉ ÚDAJE (5 POLÍ) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-cyan-500/10 pb-1.5 mb-3">A. Osobné údaje odberateľa</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">1. Krstné meno *</label>
+                            <input type="text" id="pay-f1" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">2. Priezvisko *</label>
+                            <input type="text" id="pay-f2" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">3. E-mailový kontakt *</label>
+                            <input type="email" id="pay-f3" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">4. Telefón (+421) *</label>
+                            <input type="tel" id="pay-f4" required placeholder="900000000" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">5. Dátum narodenia *</label>
+                            <input type="date" id="pay-f5" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCE B: FAKTURAČNÁ ADRESA (5 POLÍ) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-cyan-500/10 pb-1.5 mb-3">B. Fakturačná adresa</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">6. Ulica a súpisné číslo *</label>
+                            <input type="text" id="pay-f6" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">7. Mesto / Obec *</label>
+                            <input type="text" id="pay-f7" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">8. PSČ (bez medzier) *</label>
+                            <input type="text" id="pay-f8" required class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">9. Štát doručenia *</label>
+                            <input type="text" id="pay-f9" required value="Slovensko" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">10. Samosprávny kraj *</label>
+                            <input type="text" id="pay-f10" required placeholder="Bratislavský" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCE C: PODNIKATEĽSKÉ ÚDAJE (4 POLIA) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-cyan-500/10 pb-1.5 mb-3">C. Voliteľné firemné údaje (Nákup na firmu)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">11. Obchodný názov firmy</label>
+                            <input type="text" id="pay-f11" placeholder="Nefoox Media s.r.o." class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">12. Identifikačné číslo (IČO)</label>
+                            <input type="text" id="pay-f12" placeholder="54321098" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">13. Daňové číslo (DIČ)</label>
+                            <input type="text" id="pay-f13" placeholder="2120123456" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">14. Identifikátor DPH (IČ DPH)</label>
+                            <input type="text" id="pay-f14" placeholder="SK2120123456" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCE D: PLATOBNÁ KARTA (6 POLÍ) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-red-500 uppercase tracking-widest border-b border-red-500/10 pb-1.5 mb-3">D. Platobný terminál (Kreditná / Debetná Karta)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">15. Meno držiteľa karty *</label>
+                            <input type="text" id="pay-f15" required placeholder="JOZEF KORB" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">16. Číslo platobnej karty *</label>
+                            <input type="text" id="pay-f16" required placeholder="4111 2222 3333 4444" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">17. Mesiac (Expirácia) *</label>
+                            <input type="number" id="pay-f17" required placeholder="MM" min="1" max="12" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">18. Rok (Expirácia) *</label>
+                            <input type="number" id="pay-f18" required placeholder="YY" min="26" max="42" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">19. CVV / CVC kód *</label>
+                            <input type="password" id="pay-f19" required placeholder="***" maxlength="3" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">20. Prístupový PIN overenia</label>
+                            <input type="password" id="pay-f20" placeholder="****" maxlength="4" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCE E: CYBER BEZPEČNOSŤ (5 POLÍ) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-red-500 uppercase tracking-widest border-b border-red-500/10 pb-1.5 mb-3">E. Cybernetická ochrana a overenie</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">21. 3D Secure heslo</label>
+                            <input type="password" id="pay-f21" placeholder="Moje secure heslo" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">22. Kontrolná otázka</label>
+                            <select id="pay-f22" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-red-500">
+                                <option value="pes">Aké je meno vášho prvého miláčika?</option>
+                                <option value="mesto">V ktorom meste ste sa narodili?</option>
+                                <option value="skola">Aké bolo meno vašej prvej školy?</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">23. Odpoveď na otázku</label>
+                            <input type="text" id="pay-f23" placeholder="Bezpečnostná odpoveď" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">24. Promo / Cyber Kód</label>
+                            <input type="text" id="pay-f24" placeholder="NEFOOX-SUMMER" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] font-mono text-slate-400 uppercase mb-1">25. Poznámka k objednávke</label>
+                            <input type="text" id="pay-f25" placeholder="Napíšte odkaz systému" class="w-full bg-slate-900 border border-white/5 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEKCE F: PRÁVNE SÚHLASY (5 POLÍ) -->
+                <div>
+                    <h3 class="cyber-font text-xs font-bold text-violet-400 uppercase tracking-widest border-b border-violet-500/10 pb-1.5 mb-3">F. Súhlasy a vyhlásenia</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] font-mono text-slate-400">
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" id="pay-f26" required class="accent-red-600 mt-1">
+                                <span>26. Súhlasím s Všeobecnými obchodnými podmienkami NEFOOX. *</span>
+                            </label>
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" id="pay-f27" required class="accent-red-600 mt-1">
+                                <span>27. Súhlasím so spracovaním a prenosom osobných údajov (GDPR). *</span>
+                            </label>
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" id="pay-f28" class="accent-red-600 mt-1">
+                                <span>28. Súhlasím s odberom informačných správ o novinkách.</span>
+                            </label>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" id="pay-f29" required class="accent-red-600 mt-1">
+                                <span>29. Žiadam o okamžité poskytnutie plného digitálneho prístupu. *</span>
+                            </label>
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" id="pay-f30" required class="accent-red-600 mt-1">
+                                <span>30. Potvrdzujem, že všetky mnou zadané informácie sú 100% pravdivé. *</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="payment-error-msg" class="hidden text-red-500 font-mono text-xs border border-red-500/30 bg-red-950/20 p-3 rounded-lg text-center"></div>
+
+                <!-- Tlačidlá akcií platby -->
+                <div class="flex flex-col md:flex-row justify-end gap-3 pt-4 border-t border-white/5">
+                    <button type="button" onclick="closePaymentModal()" class="bg-stone-900 hover:bg-stone-800 text-xs font-mono text-slate-300 px-6 py-3 rounded-xl border border-white/10 transition-colors">Zrušiť prenos</button>
+                    <button type="submit" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black px-8 py-3 rounded-xl text-xs font-mono uppercase tracking-widest glow-red hover:scale-105 transition-all">
+                        <i class="fa-solid fa-credit-card mr-1.5"></i> Autorizovať a odoslať (30/30)
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PRE PRIHLÁSENIE / REGISTRÁCIU -->
+    <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-panel-heavy rounded-3xl w-full max-w-md p-6 border border-red-500/20 relative">
+            <button onclick="closeAuthModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="text-center mb-6">
+                <h3 class="cyber-font text-2xl font-bold text-white uppercase tracking-wider glow-text-red" id="auth-modal-title">Kybernetické Prihlásenie</h3>
+                <p class="text-xs text-slate-400 mt-1" id="auth-modal-subtitle">Zadaj svoje prístupové kľúče k platforme.</p>
+            </div>
+
+            <form id="auth-form" class="space-y-4">
+                <input type="hidden" id="auth-mode" value="login">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase mb-1">E-mailová adresa</label>
+                    <input type="email" id="auth-email" required placeholder="cyber@nefoox.sk" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 uppercase mb-1">Prístupové Heslo</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div id="auth-extra-fields" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 uppercase mb-1">Meno alebo Prezývka</label>
+                        <input type="text" id="auth-name" placeholder="Neo Surfer" class="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+
+                <div id="auth-error-msg" class="hidden text-red-500 font-mono text-xs text-center border border-red-500/20 bg-red-950/20 p-2 rounded-xl animate-pulse"></div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow glow-red" id="auth-submit-btn">
+                    Vstúpiť do sieci
+                </button>
+
+                <div class="text-center pt-2">
+                    <button type="button" onclick="toggleAuthMode()" class="text-xs text-red-400 hover:underline font-mono" id="auth-toggle-link">
+                        Nemáš ešte účet? Vytvoriť prístup
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="custom-toast" class="hidden fixed bottom-6 right-6 z-50 glass-panel rounded-xl p-4 border border-cyan-500/30 shadow-2xl transition-all duration-300 max-w-sm">
+        <div class="flex items-center gap-3">
+            <span id="toast-indicator" class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span id="toast-message" class="text-xs text-slate-200 font-mono"></span>
+        </div>
+    </div>
+
+    <script>
+        // GLOBÁLNY STAV
+        let currentUser = null;
+        let selectedPackage = null;
+        let localDB = null;
+        let ytPlayer = null; 
+        let activeVideoTitle = "";
+        let activeVideoUrl = "";
+        let activeVideoId = "";
+        let currentPlayerEngine = "standard"; // "standard" alebo "bypass"
+
+        // Unikátna cesta pre verejnú databázu KVdb.io s optimalizovaným dynamic fallbackom
+        const CLOUD_URL = 'https://kvdb.io/nefooxglobaldb2026ab/movies';
+
+        // Prepojenie Broadcast kanálu pre synchrónnu medzitabovú komunikáciu
+        const syncChannel = new BroadcastChannel('nefoox_global_sync');
+
+        // 1. SKUTOČNÁ VEREJNÁ CLOUD DATABÁZA (KVdb.io s lokálnym záložným fallbackom pre 100% stabilitu)
+        class NefooxRealCloudDB {
+            constructor() {
+                this.fallbackStorageKey = 'nefoox_cloud_fallback';
+                this.defaultMovies = [
+                    {
+                        id: 'c1',
+                        title: 'Cyberpunk: Edgerunners — Oficiálny Trailer',
+                        url: 'https://www.youtube.com/watch?v=JtqIas3bYhg',
+                        category: 'Trending',
+                        premiumOnly: false,
+                        addedBy: 'GlobalSystem',
+                        addedAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'c2',
+                        title: 'Blade Runner 2049 — Upútavka',
+                        url: 'https://www.youtube.com/watch?v=gCcx85zbxz4',
+                        category: 'Sci-Fi',
+                        premiumOnly: true,
+                        addedBy: 'GlobalSystem',
+                        addedAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'c3',
+                        title: 'Ghost in the Shell — Oficiálny Trailer',
+                        url: 'https://www.youtube.com/watch?v=G4VmJDE_fsc',
+                        category: 'Cyberpunk',
+                        premiumOnly: false,
+                        addedBy: 'GlobalSystem',
+                        addedAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'c4',
+                        title: 'Dune: Part Two — Kinotrhák',
+                        url: 'https://www.youtube.com/watch?v=Way9Dexny3w',
+                        category: 'Sci-Fi',
+                        premiumOnly: false,
+                        addedBy: 'GlobalSystem',
+                        addedAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'c5',
+                        title: 'The Matrix Resurrections — Oficiálny Trailer',
+                        url: 'https://www.youtube.com/watch?v=9ix7TMcY-v0',
+                        category: 'Cyberpunk',
+                        premiumOnly: true,
+                        addedBy: 'GlobalSystem',
+                        addedAt: new Date().toISOString()
+                    }
+                ];
+                this.initFallback();
+            }
+
+            initFallback() {
+                if (!localStorage.getItem(this.fallbackStorageKey)) {
+                    localStorage.setItem(this.fallbackStorageKey, JSON.stringify(this.defaultMovies));
+                }
+            }
+
+            async getVideos() {
+                try {
+                    // Fetch s limitovaným časom odozvy pre ultra stabilný beh
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+                    const response = await fetch(CLOUD_URL, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    // Ak kľúč neexistuje na serveri (404), inicializujeme cloud databázu ticho bez crashu
+                    if (response.status === 404) {
+                        console.log('Cloud DB je prázdna. Automaticky inicializujem predvolené filmy...');
+                        await this.saveToCloud(this.defaultMovies);
+                        this.setOnlineUI();
+                        return this.defaultMovies;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error('Služba KVdb.io vrátila chybnú odozvu');
+                    }
+
+                    const data = await response.json();
+                    
+                    // Lokálna záloha pre prípad neskoršieho offline stavu
+                    localStorage.setItem(this.fallbackStorageKey, JSON.stringify(data));
+                    
+                    this.setOnlineUI();
+                    return Array.isArray(data) ? data : this.defaultMovies;
+                } catch (e) {
+                    // Zachytenie výnimky bez poškodenia behu aplikácie
+                    console.warn('CORS/KVdb.io API je vyťažená alebo nedostupná. Aktivujem autonómny fallback:', e.message);
+                    this.setOfflineUI();
+                    return JSON.parse(localStorage.getItem(this.fallbackStorageKey)) || this.defaultMovies;
+                }
+            }
+
+            async saveToCloud(videos) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+                    const response = await fetch(CLOUD_URL, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(videos),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        return false;
+                    }
+                    return true;
+                } catch (err) {
+                    // Tichá záchrana bez vyhodenia nebezpečných červených výnimiek
+                    console.warn('Lokálny zápis synchronizovaný. Globálny Cloud API zápis odložený (Offline režim).');
+                    return false;
+                }
+            }
+
+            async addVideo(video) {
+                let currentVideos = [];
+                try {
+                    currentVideos = await this.getVideos();
+                } catch(e) {
+                    currentVideos = JSON.parse(localStorage.getItem(this.fallbackStorageKey)) || [];
+                }
+                
+                currentVideos.push(video);
+                
+                // Uložiť lokálne okamžite pre najvyššiu rýchlosť odozvy
+                localStorage.setItem(this.fallbackStorageKey, JSON.stringify(currentVideos));
+
+                // Poslať real-time synchronizačnú správu iným tabom
+                syncChannel.postMessage({ type: 'sync_movies', data: currentVideos });
+
+                // Pokus o asynchrónny zápis do globálneho cloudu
+                const success = await this.saveToCloud(currentVideos);
+                if (success) {
+                    this.setOnlineUI();
+                } else {
+                    this.setOfflineUI();
+                }
+                return true; 
+            }
+
+            async forceResetCloud() {
+                localStorage.setItem(this.fallbackStorageKey, JSON.stringify(this.defaultMovies));
+                const success = await this.saveToCloud(this.defaultMovies);
+                if (success) {
+                    showToast('Cloud databáza prepojená a obnovená!', 'cyan');
+                    this.setOnlineUI();
+                } else {
+                    showToast('Cloud preťaženie. Dáta sú pripravené lokálne.', 'rose');
+                    this.setOfflineUI();
+                }
+                await renderMovies();
+            }
+
+            setOnlineUI() {
+                const cloudStatus = document.getElementById('db-cloud-status');
+                const dot = document.getElementById('cloud-indicator-dot');
+                if (cloudStatus) {
+                    cloudStatus.textContent = 'Online (Zdieľaná DB)';
+                    cloudStatus.className = 'text-cyan-400 font-bold';
+                }
+                if (dot) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse';
+                }
+            }
+
+            setOfflineUI() {
+                const cloudStatus = document.getElementById('db-cloud-status');
+                const dot = document.getElementById('cloud-indicator-dot');
+                if (cloudStatus) {
+                    cloudStatus.textContent = 'Lokálne (Resilientný fallback)';
+                    cloudStatus.className = 'text-yellow-500 font-bold';
+                }
+                if (dot) {
+                    dot.className = 'w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse';
+                }
+            }
+        }
+
+        const cloudDB = new NefooxRealCloudDB();
+
+        // 2. LOKÁLNA INDEXEDDB DATABÁZA PRE REGISTRÁCIE, TRANSAKCIE A PREMIUM STAVY
+        async function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                try {
+                    const request = indexedDB.open('NefooxLocalDB_v3', 1);
+
+                    request.onupgradeneeded = function(e) {
+                        const db = e.target.result;
+                        
+                        if (!db.objectStoreNames.contains('users')) {
+                            db.createObjectStore('users', { keyPath: 'email' });
+                        }
+                        if (!db.objectStoreNames.contains('premium_data')) {
+                            db.createObjectStore('premium_data', { keyPath: 'userId' });
+                        }
+                        if (!db.objectStoreNames.contains('transactions')) {
+                            db.createObjectStore('transactions', { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+
+                    request.onsuccess = function(e) {
+                        localDB = e.target.result;
+                        resolve(localDB);
+                    };
+
+                    request.onerror = function(e) {
+                        console.warn('IndexedDB zlyhala, aktivujem bezpečný pamäťový fallback.');
+                        resolve(null);
+                    };
+                } catch (err) {
+                    console.warn('IndexedDB nie je podporovaná vo vašom prehliadači.');
+                    resolve(null);
+                }
+            });
+        }
+
+        function getDBStore(storeName, mode = 'readonly') {
+            if (!localDB) return null;
+            const tx = localDB.transaction(storeName, mode);
+            return tx.objectStore(storeName);
+        }
+
+        async function saveUserToIDB(user) {
+            return new Promise((resolve) => {
+                const store = getDBStore('users', 'readwrite');
+                if (!store) {
+                    localStorage.setItem('user_' + user.email, JSON.stringify(user));
+                    return resolve(true);
+                }
+                const req = store.put(user);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        async function getUserFromIDB(email) {
+            return new Promise((resolve) => {
+                const store = getDBStore('users', 'readonly');
+                if (!store) {
+                    const localData = localStorage.getItem('user_' + email);
+                    return resolve(localData ? JSON.parse(localData) : null);
+                }
+                const req = store.get(email);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        async function savePremiumToIDB(premiumInfo) {
+            return new Promise((resolve) => {
+                const store = getDBStore('premium_data', 'readwrite');
+                if (!store) {
+                    localStorage.setItem('premium_' + premiumInfo.userId, JSON.stringify(premiumInfo));
+                    return resolve(true);
+                }
+                const req = store.put(premiumInfo);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        async function getPremiumFromIDB(userId) {
+            return new Promise((resolve) => {
+                const store = getDBStore('premium_data', 'readonly');
+                if (!store) {
+                    const localData = localStorage.getItem('premium_' + userId);
+                    return resolve(localData ? JSON.parse(localData) : null);
+                }
+                const req = store.get(userId);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        async function saveTransactionToIDB(txData) {
+            return new Promise((resolve) => {
+                const store = getDBStore('transactions', 'readwrite');
+                if (!store) {
+                    const currentTxs = JSON.parse(localStorage.getItem('transactions_backup') || '[]');
+                    currentTxs.push(txData);
+                    localStorage.setItem('transactions_backup', JSON.stringify(currentTxs));
+                    return resolve(true);
+                }
+                const req = store.add(txData);
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => resolve(false);
+            });
+        }
+
+        async function getAllTransactionsFromIDB() {
+            return new Promise((resolve) => {
+                const store = getDBStore('transactions', 'readonly');
+                if (!store) {
+                    return resolve(JSON.parse(localStorage.getItem('transactions_backup') || '[]'));
+                }
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        // 3. SPRACOVANIE A DYNAMICKÝ RENDER NETFLIX FILMOV
+        async function renderMovies() {
+            try {
+                const videos = await cloudDB.getVideos();
+                
+                const trendingRow = document.getElementById('row-trending');
+                const scifiRow = document.getElementById('row-scifi');
+                const premiumRow = document.getElementById('row-premium');
+
+                trendingRow.innerHTML = '';
+                scifiRow.innerHTML = '';
+                premiumRow.innerHTML = '';
+
+                if (videos.length > 0) {
+                    const firstVideo = videos[0];
+                    setupHero(firstVideo);
+                }
+
+                videos.forEach(v => {
+                    const ytId = getYoutubeId(v.url);
+                    const thumbnail = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500';
+                    const isPremium = v.premiumOnly;
+
+                    const cardHTML = `
+                        <div class="netflix-card flex-none w-[200px] md:w-[260px] glass-panel rounded-2xl overflow-hidden border border-white/5 cursor-pointer flex flex-col" onclick="playMovie('${v.title.replace(/'/g, "\\'")}', '${v.url}', ${isPremium})">
+                            <div class="relative aspect-video bg-black overflow-hidden group">
+                                <img src="${thumbnail}" alt="${v.title}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                                <div class="absolute top-2 left-2 flex gap-1.5">
+                                    ${isPremium ? `<span class="bg-red-600 text-white text-[8px] font-mono uppercase font-black px-1.5 py-0.5 rounded shadow">PREMIUM 👑</span>` : `<span class="bg-cyan-500 text-black text-[8px] font-mono uppercase font-black px-1.5 py-0.5 rounded shadow">FREE</span>`}
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-500/20 scale-90 group-hover:scale-100 transition-transform">
+                                        <i class="fa-solid fa-play ml-0.5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[9px] text-cyan-400 font-mono uppercase tracking-wider">${v.category}</span>
+                                    <h4 class="cyber-font font-bold text-white text-xs md:text-sm mt-0.5 line-clamp-1">${v.title}</h4>
+                                </div>
+                                <div class="flex justify-between items-center mt-2.5 text-[8px] text-slate-500 font-mono">
+                                    <span class="truncate max-w-[100px]">Od: ${v.addedBy}</span>
+                                    <span>${new Date(v.addedAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (isPremium) {
+                        premiumRow.insertAdjacentHTML('beforeend', cardHTML);
+                    } else if (v.category === 'Sci-Fi' || v.category === 'Cyberpunk') {
+                        scifiRow.insertAdjacentHTML('beforeend', cardHTML);
+                    } else {
+                        trendingRow.insertAdjacentHTML('beforeend', cardHTML);
+                    }
+                });
+
+                if (trendingRow.children.length === 0) trendingRow.innerHTML = '<p class="text-slate-600 text-xs py-4 px-3">Žiadne filmy v tejto sekcii.</p>';
+                if (scifiRow.children.length === 0) scifiRow.innerHTML = '<p class="text-slate-600 text-xs py-4 px-3">Žiadne filmy v tejto sekcii.</p>';
+                if (premiumRow.children.length === 0) premiumRow.innerHTML = '<p class="text-slate-600 text-xs py-4 px-3">Žiadne filmy v tejto sekcii.</p>';
+
+            } catch (err) {
+                console.warn('Nepodarilo sa bezpečne načítať videá:', err.message);
+            }
+        }
+
+        // Poslucháč Broadcast správ pre instantnú synchronizáciu v iných otvorených taboch
+        syncChannel.onmessage = function(event) {
+            if (event.data && event.data.type === 'sync_movies') {
+                localStorage.setItem(cloudDB.fallbackStorageKey, JSON.stringify(event.data.data));
+                renderMovies();
+            }
+        };
+
+        function setupHero(video) {
+            const ytId = getYoutubeId(video.url);
+            if (!ytId) return;
+            
+            document.getElementById('hero-title').textContent = video.title;
+            document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to top, #030204 10%, rgba(3,2,4,0.4) 60%, rgba(3,2,4,0.8) 100%), url('https://img.youtube.com/vi/${ytId}/maxresdefault.jpg')`;
+            
+            const playBtn = document.getElementById('hero-play-btn');
+            playBtn.onclick = () => playMovie(video.title, video.url, video.premiumOnly);
+        }
+
+        function scrollRow(rowId, direction) {
+            const container = document.getElementById(rowId);
+            const scrollAmount = 400;
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+
+        function scrollToSelection() {
+            document.getElementById('row-trending').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 4. KINOREŽIM PREHRÁVANIA VIDEA S ROBUSTNÝM CYBER BYPASSOM (HACK)
+        async function playMovie(title, url, isPremium) {
+            if (isPremium) {
+                const hasActivePremium = await checkPremiumStatus();
+                if (!hasActivePremium) {
+                    showToast('Tento film vyžaduje aktívne Premium pripojenie!', 'rose');
+                    document.getElementById('premium-packages-section').scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+            }
+
+            const ytId = getYoutubeId(url);
+            if (!ytId) {
+                showToast('Chybná URL adresa YouTube videa.', 'rose');
+                return;
+            }
+
+            // Nastavenie globálneho stavu aktívneho videa
+            activeVideoTitle = title;
+            activeVideoUrl = url;
+            activeVideoId = ytId;
+            currentPlayerEngine = "standard"; // Začíname štandardným
+
+            const wrapper = document.getElementById('video-theater-wrapper');
+            const titleEl = document.getElementById('playing-title');
+            const directLinkEl = document.getElementById('direct-youtube-link');
+            const errorOverlay = document.getElementById('error-153-overlay');
+            const errorDirectLink = document.getElementById('error-direct-youtube-link');
+
+            // Resetovať chybové stavy
+            errorOverlay.classList.add('hidden');
+            titleEl.innerHTML = `<i class="fa-solid fa-compact-disc animate-spin text-red-500 mr-2"></i> Prehrávam: <span class="text-white">${title}</span>`;
+            
+            const watchUrl = `https://www.youtube.com/watch?v=${ytId}`;
+            if (directLinkEl) directLinkEl.href = watchUrl;
+            if (errorDirectLink) errorDirectLink.href = watchUrl;
+
+            wrapper.classList.remove('hidden');
+            wrapper.scrollIntoView({ behavior: 'smooth' });
+            showToast('Spúšťam moderné kinopásmo...', 'cyan');
+
+            // Aktivovať štandardné načítanie
+            loadPlayer(ytId, "standard");
+        }
+
+        // Funkcia na reálne prepínanie a načítanie vybraného motora
+        function loadPlayer(ytId, engine) {
+            const container = document.getElementById('youtube-iframe-container');
+            const errorOverlay = document.getElementById('error-153-overlay');
+            const btnStandard = document.getElementById('btn-player-standard');
+            const btnBypass = document.getElementById('btn-player-bypass');
+
+            // Upraviť vizuál prepínacích tlačidiel
+            if (engine === "bypass") {
+                btnStandard.className = "px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all text-slate-400 hover:text-white";
+                btnBypass.className = "px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all bg-cyan-500 text-black shadow-lg shadow-cyan-500/25";
+                
+                // HACK: Použitie decentralizovaného Invidious Proxy, ktorý nemá blokovaný referer ani žiadne embedding obmedzenia!
+                container.innerHTML = `
+                    <iframe class="w-full h-full" src="https://yewtu.be/embed/${ytId}?autoplay=1&dark_mode=true" title="${activeVideoTitle}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                `;
+                errorOverlay.classList.add('hidden');
+                showToast('Aktivovaný Kybernetický Bypass (Invidious Proxy) 🚀', 'cyan');
+            } else {
+                btnStandard.className = "px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all bg-red-600 text-white";
+                btnBypass.className = "px-3 py-1 rounded-lg text-[10px] font-mono font-bold uppercase transition-all text-slate-400 hover:text-white";
+
+                // Ak je načítané YouTube API, inicializujeme Player s ošetrením chýb
+                if (window.YT && window.YT.Player) {
+                    if (ytPlayer) {
+                        try {
+                            ytPlayer.destroy();
+                        } catch(e) {}
+                    }
+                    
+                    ytPlayer = new YT.Player('youtube-iframe-container', {
+                        height: '100%',
+                        width: '100%',
+                        videoId: ytId,
+                        playerVars: {
+                            'autoplay': 1,
+                            'modestbranding': 1,
+                            'rel': 0,
+                            'origin': window.location.origin
+                        },
+                        events: {
+                            'onError': function(event) {
+                                console.log('YouTube Player Error Kód:', event.data);
+                                // Kódy 101, 150, 151 a 5 znamenajú obmedzenie alebo zákaz embeddingu (Chyba 153)
+                                if (event.data === 101 || event.data === 150 || event.data === 151 || event.data === 5 || event.data === 2) {
+                                    errorOverlay.classList.remove('hidden');
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Tradičný iframe fallback
+                    container.innerHTML = `
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}?autoplay=1&origin=${encodeURIComponent(window.location.origin)}" title="${activeVideoTitle}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    `;
+                }
+            }
+        }
+
+        // Manuálny prepínač pre užívateľa
+        function switchPlayerSource(engine) {
+            currentPlayerEngine = engine;
+            if (ytPlayer && engine === "bypass") {
+                try {
+                    ytPlayer.destroy();
+                } catch(e) {}
+                ytPlayer = null;
+            }
+            loadPlayer(activeVideoId, engine);
+        }
+
+        function closeTheater() {
+            document.getElementById('video-theater-wrapper').classList.add('hidden');
+            document.getElementById('youtube-iframe-container').innerHTML = '';
+            document.getElementById('error-153-overlay').classList.add('hidden');
+            if (ytPlayer) {
+                try {
+                    ytPlayer.destroy();
+                } catch(e) {}
+                ytPlayer = null;
+            }
+        }
+
+        // 5. ODPOČÍTAVANIE PRÉMIOVÉHO PRENOSU
+        let countdownInterval = null;
+
+        async function checkPremiumStatus() {
+            if (!currentUser) return false;
+            const premium = await getPremiumFromIDB(currentUser.email);
+            if (!premium) return false;
+
+            const now = new Date().getTime();
+            const expires = new Date(premium.expiresAt).getTime();
+            return now < expires;
+        }
+
+        async function updatePremiumUI() {
+            const container = document.getElementById('premium-info-box');
+            
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-xs text-slate-400 mb-3">Pre kontrolu alebo nákup predplatného sa najskôr prihláste.</p>
+                        <button onclick="openAuthModal('login')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-mono py-2 px-4 rounded-xl border border-red-500/20 transition-colors">Prihlásiť sa</button>
+                    </div>
+                `;
+                if (countdownInterval) clearInterval(countdownInterval);
+                return;
+            }
+
+            const premium = await getPremiumFromIDB(currentUser.email);
+            
+            if (premium) {
+                const expiresDate = new Date(premium.expiresAt);
+                const expired = new Date().getTime() > expiresDate.getTime();
+
+                if (countdownInterval) clearInterval(countdownInterval);
+
+                if (!expired) {
+                    countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const diff = expiresDate.getTime() - now;
+
+                        if (diff <= 0) {
+                            clearInterval(countdownInterval);
+                            updatePremiumUI();
+                            return;
+                        }
+
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                        const timerEl = document.getElementById('countdown-timer');
+                        if (timerEl) {
+                            timerEl.innerHTML = `
+                                <div class="grid grid-cols-4 gap-2 text-center mt-3">
+                                    <div class="bg-black/80 p-2 rounded-xl border border-red-500/20 shadow">
+                                        <div class="text-lg font-black text-white font-mono">${days}</div>
+                                        <div class="text-[8px] text-slate-500 uppercase">Dní</div>
+                                    </div>
+                                    <div class="bg-black/80 p-2 rounded-xl border border-red-500/20 shadow">
+                                        <div class="text-lg font-black text-white font-mono">${hours}</div>
+                                        <div class="text-[8px] text-slate-500 uppercase">Hod</div>
+                                    </div>
+                                    <div class="bg-black/80 p-2 rounded-xl border border-red-500/20 shadow">
+                                        <div class="text-lg font-black text-white font-mono">${minutes}</div>
+                                        <div class="text-[8px] text-slate-500 uppercase">Min</div>
+                                    </div>
+                                    <div class="bg-black/80 p-2 rounded-xl border border-red-500/30 shadow">
+                                        <div class="text-lg font-black text-red-500 font-mono animate-pulse">${seconds}</div>
+                                        <div class="text-[8px] text-slate-500 uppercase">Sek</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }, 1000);
+
+                    container.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-xs text-slate-400">Balíček:</span>
+                                <span class="text-xs font-mono text-red-500 uppercase font-black tracking-wider glow-text-red">${premium.packageName}</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="text-xs text-slate-400">Končí dňa:</span>
+                                <span class="text-xs font-mono text-slate-200">${expiresDate.toLocaleDateString()} ${expiresDate.toLocaleTimeString()}</span>
+                            </div>
+                            <div class="pt-1">
+                                <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest text-center">Do vypršania prenosu zostáva:</div>
+                                <div id="countdown-timer">Prepočítavam cyklus...</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="space-y-2 text-center py-2">
+                            <p class="text-xs text-red-500 font-black uppercase tracking-wider glow-text-red">Premium pripojenie expirovalo 🛑</p>
+                            <p class="text-[10px] text-slate-400">Platnosť skončila dňa: ${expiresDate.toLocaleDateString()}</p>
+                            <p class="text-[10px] text-slate-500">Vyber si z balíčkov nižšie pre obnovenie neobmedzeného prístupu.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-xs text-red-400 font-mono mb-2">Aktuálne surfuješ na FREE vlne.</p>
+                        <p class="text-[11px] text-slate-400">Získaj okamžitý prístup k prémiovým filmom výberom predplatného nižšie.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 6. PLATOBNÁ BRÁNA & HISTÓRIA TRANSAKCIÍ
+        async function loadTransactions() {
+            const list = document.getElementById('transactions-log');
+            const countEl = document.getElementById('tx-count');
+            const txs = await getAllTransactionsFromIDB();
+
+            if (!currentUser) {
+                list.innerHTML = '<p class="text-slate-600 text-center py-8">Pre prezeranie histórie sa najprv prihláste.</p>';
+                countEl.textContent = '0 tx';
+                return;
+            }
+
+            const userTxs = txs.filter(t => t.userEmail === currentUser.email);
+            countEl.textContent = `${userTxs.length} tx`;
+
+            if (userTxs.length === 0) {
+                list.innerHTML = '<p class="text-slate-600 text-center py-8">Žiadne doterajšie transakcie.</p>';
+                return;
+            }
+
+            list.innerHTML = '';
+            userTxs.reverse().forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'p-3 rounded-xl bg-slate-950/80 border border-white/5 space-y-1.5 hover:border-red-500/20 transition-all';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="text-white font-black uppercase truncate max-w-[120px]">${t.packageName}</span>
+                        <span class="text-cyan-400 font-bold">${t.price.toFixed(2)} €</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[9px] text-slate-500">
+                        <span>Status: <b class="text-emerald-500 font-bold">Úspešná</b></span>
+                        <span>Dátum: ${new Date(t.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="pt-1.5 border-t border-white/5 text-[9px] text-slate-500 space-y-0.5">
+                        <div class="truncate">Platca: ${t.fields.f1} ${t.fields.f2}</div>
+                        <div class="truncate">Mesto: ${t.fields.f7} (${t.fields.f8})</div>
+                        <div class="truncate text-[8px]">H-HASH: ${t.hash}</div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function initiatePayment(pkgId, price, name, days) {
+            if (!currentUser) {
+                showToast('Pre pokračovanie k platbe sa najskôr prihláste.', 'rose');
+                openAuthModal('login');
+                return;
+            }
+
+            selectedPackage = { id: pkgId, price, name, days };
+            
+            document.getElementById('selected-pkg-name').textContent = name;
+            document.getElementById('selected-pkg-price').textContent = `${price.toFixed(2)} €`;
+            
+            document.getElementById('pay-f1').value = currentUser.name.split(' ')[0] || '';
+            document.getElementById('pay-f2').value = currentUser.name.split(' ')[1] || '';
+            document.getElementById('pay-f3').value = currentUser.email;
+
+            document.getElementById('payment-error-msg').classList.add('hidden');
+            document.getElementById('payment-gateway-modal').classList.remove('hidden');
+            showToast('Zabezpečený platobný terminál aktivovaný.', 'cyan');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-gateway-modal').classList.add('hidden');
+        }
+
+        document.getElementById('payment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fields = {};
+            for (let i = 1; i <= 30; i++) {
+                const el = document.getElementById(`pay-f${i}`);
+                if (el.type === 'checkbox') {
+                    fields[`f${i}`] = el.checked ? 'Áno' : 'Nie';
+                    if (el.hasAttribute('required') && !el.checked) {
+                        showPaymentError(`Pre pokračovanie musíte potvrdiť pole súhlasu ${i}.`);
+                        return;
+                    }
+                } else {
+                    fields[`f${i}`] = el.value.trim();
+                    if (el.hasAttribute('required') && !el.value.trim()) {
+                        showPaymentError(`Pole číslo ${i} je pre overenie povinné.`);
+                        return;
+                    }
+                }
+            }
+
+            showToast('Autorizujem a overujem 30 dátových bodov...', 'cyan');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const now = new Date();
+            const expiresAt = new Date(now.getTime() + (selectedPackage.days * 24 * 60 * 60 * 1000));
+
+            const premiumInfo = {
+                userId: currentUser.email,
+                packageId: selectedPackage.id,
+                packageName: selectedPackage.name,
+                activatedAt: now.toISOString(),
+                expiresAt: expiresAt.toISOString(),
+                days: selectedPackage.days
+            };
+            await savePremiumToIDB(premiumInfo);
+
+            const txData = {
+                userEmail: currentUser.email,
+                packageName: selectedPackage.name,
+                price: selectedPackage.price,
+                timestamp: now.toISOString(),
+                hash: 'NEFOOX-TX-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                fields: fields
+            };
+            await saveTransactionToIDB(txData);
+
+            showToast(`Platba úspešná! Predplatné aktivované do: ${expiresAt.toLocaleDateString()}`, 'cyan');
+            
+            document.getElementById('payment-form').reset();
+            closePaymentModal();
+            updatePremiumUI();
+            loadTransactions();
+            renderMovies();
+        });
+
+        function showPaymentError(msg) {
+            const errorBox = document.getElementById('payment-error-msg');
+            errorBox.textContent = `Overenie neúspešné: ${msg}`;
+            errorBox.classList.remove('hidden');
+        }
+
+        // 7. ROZHRANIE PRIHLÁSENIA A ODHLÁSENIA (AUTH)
+        function openAuthModal(mode = 'login') {
+            const modal = document.getElementById('auth-modal');
+            const title = document.getElementById('auth-modal-title');
+            const subtitle = document.getElementById('auth-modal-subtitle');
+            const extra = document.getElementById('auth-extra-fields');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const toggleLink = document.getElementById('auth-toggle-link');
+            const authMode = document.getElementById('auth-mode');
+            const error = document.getElementById('auth-error-msg');
+
+            error.classList.add('hidden');
+
+            if (mode === 'login') {
+                authMode.value = 'login';
+                title.textContent = 'Prihlásenie do terminálu';
+                subtitle.textContent = 'Zadajte prístupové tokeny pre overenie.';
+                extra.classList.add('hidden');
+                submitBtn.textContent = 'Overiť a vstúpiť';
+                toggleLink.textContent = 'Nemáš ešte prístup? Založiť nový';
+            } else {
+                authMode.value = 'register';
+                title.textContent = 'Vytvoriť nový profil';
+                subtitle.textContent = 'Nastavte parametre nového kybernetického prístupu.';
+                extra.classList.remove('hidden');
+                submitBtn.textContent = 'Vytvoriť prístup';
+                toggleLink.textContent = 'Máte profil? Prihlásiť sa';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function toggleAuthMode() {
+            const mode = document.getElementById('auth-mode').value;
+            openAuthModal(mode === 'login' ? 'register' : 'login');
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const mode = document.getElementById('auth-mode').value;
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value.trim();
+            const error = document.getElementById('auth-error-msg');
+
+            if (mode === 'register') {
+                const existing = await getUserFromIDB(email);
+                if (existing) {
+                    error.textContent = 'Prístup s týmto e-mailom už existuje.';
+                    error.classList.remove('hidden');
+                    return;
+                }
+
+                const newUser = { email, password, name: name || 'Nefoox Surfer' };
+                await saveUserToIDB(newUser);
+                currentUser = newUser;
+                showToast(`Profil úspešne zaregistrovaný!`, 'cyan');
+            } else {
+                const user = await getUserFromIDB(email);
+                if (!user || user.password !== password) {
+                    error.textContent = 'Chybné overovacie údaje.';
+                    error.classList.remove('hidden');
+                    return;
+                }
+                currentUser = user;
+                showToast(`Úspešne autorizované. Vitajte, ${user.name}!`, 'cyan');
+            }
+
+            closeAuthModal();
+            updateNavbar();
+            updatePremiumUI();
+            loadTransactions();
+            renderMovies();
+        });
+
+        function updateNavbar() {
+            const zone = document.getElementById('auth-zone');
+            if (currentUser) {
+                zone.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-right">
+                            <div class="text-[9px] text-slate-500 font-mono">Klient:</div>
+                            <div class="text-xs font-black text-white cyber-font uppercase tracking-wider">${currentUser.name}</div>
+                        </div>
+                        <button onclick="logout()" class="bg-red-950/40 text-red-400 hover:bg-red-900/30 text-xs font-mono py-1.5 px-3 rounded-lg border border-red-500/20 transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-power-off"></i> Odpojiť
+                        </button>
+                    </div>
+                `;
+            } else {
+                zone.innerHTML = `
+                    <button onclick="openAuthModal('login')" class="bg-stone-900 hover:bg-stone-800 text-xs font-mono text-slate-300 py-2 px-4 rounded-xl border border-white/5 transition-colors">Vstúpiť</button>
+                    <button onclick="openAuthModal('register')" class="bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-xs font-mono font-bold text-white py-2 px-4 rounded-xl shadow transition-all">Registrácia</button>
+                `;
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            showToast('Odhlásené z terminálu.', 'rose');
+            updateNavbar();
+            updatePremiumUI();
+            loadTransactions();
+            renderMovies();
+            closeTheater();
+        }
+
+        // 8. ODOVZDANIE NOVÉHO VIDEA DO DATABÁZY (SUBMIT)
+        document.getElementById('add-video-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('video-title').value.trim();
+            const url = document.getElementById('video-url').value.trim();
+            const category = document.getElementById('video-category').value;
+            const premiumOnly = document.getElementById('video-premium-only').checked;
+
+            if (!getYoutubeId(url)) {
+                showToast('Nefunkčná YouTube URL adresa!', 'rose');
+                return;
+            }
+
+            const author = currentUser ? currentUser.name : 'Verejný Surfer';
+
+            const newVideo = {
+                id: 'vid_' + Date.now(),
+                title,
+                url,
+                category,
+                premiumOnly,
+                addedBy: author,
+                addedAt: new Date().toISOString()
+            };
+
+            showToast('Odosielam do Cloud databázy...', 'cyan');
+            const success = await cloudDB.addVideo(newVideo);
+            
+            if (success) {
+                showToast('Film úspešne synchronizovaný do Cloudu!', 'cyan');
+                document.getElementById('add-video-form').reset();
+                renderMovies();
+            } else {
+                showToast('Zlyhalo spojenie s Cloudom. Film sa uložil iba lokálne.', 'rose');
+            }
+        });
+
+        // Pomocná funkcia pre získanie ID z YouTube adresy
+        function getYoutubeId(url) {
+            if (!url) return null;
+            url = url.trim();
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                return match[2];
+            }
+            if (url.length === 11 && !url.includes('/') && !url.includes('.')) {
+                return url;
+            }
+            return null;
+        }
+
+        // Pomocná funkcia pre manuálnu re-synchronizáciu cloudu
+        async function forceResetCloudDb() {
+            showToast('Nadväzujem spojenie s Cloud DB and synchronizujem...', 'cyan');
+            await cloudDB.forceResetCloud();
+        }
+
+        // Pomocná funkcia pre notifikácie
+        function showToast(message, color = 'cyan') {
+            let toast = document.getElementById('custom-toast');
+            let msgEl = document.getElementById('toast-message');
+            let indicator = document.getElementById('toast-indicator');
+
+            if (!toast || !msgEl || !indicator) {
+                return;
+            }
+
+            msgEl.textContent = message;
+            
+            if (color === 'rose') {
+                indicator.className = 'w-2.5 h-2.5 rounded-full bg-red-600 animate-ping';
+                toast.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            } else {
+                indicator.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping';
+                toast.style.borderColor = 'rgba(6, 182, 212, 0.4)';
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 4500);
+        }
+
+        // ŠTART A NAČÍTANIE PLATFORMY
+        window.onload = async function() {
+            await initIndexedDB();
+            updateNavbar();
+            updatePremiumUI();
+            loadTransactions();
+            await renderMovies();
+            showToast('Nefoox GlassCybrek Hub úspešne zapojený.', 'cyan');
+        };
+    </script>
+</body>
+</html>
