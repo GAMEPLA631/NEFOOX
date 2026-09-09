@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Aetheria AI - Mobile Character Studio</title>
+  <title>Aetheria AI Studio</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +14,10 @@
       --bg-primary: #090a0f;
       --bg-secondary: #12141c;
       --bg-tertiary: #1b1e2b;
-      --bg-glass: rgba(18, 20, 28, 0.75);
-      --bg-glass-card: rgba(27, 30, 43, 0.65);
+      --bg-glass: rgba(18, 20, 28, 0.82);
+      --bg-glass-card: rgba(27, 30, 43, 0.7);
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(120, 119, 198, 0.35);
+      --border-active: rgba(120, 119, 198, 0.4);
       --text-main: #f3f4f8;
       --text-secondary: #9499ad;
       --text-muted: #5e647c;
@@ -25,9 +25,8 @@
       --accent-gradient: linear-gradient(135deg, #7877c6 0%, #ff776f 100%);
       --accent-primary: #7877c6;
       --accent-glow: rgba(120, 119, 198, 0.25);
-      --user-bubble: #6366f1;
       --user-bubble-gradient: linear-gradient(135deg, #6366f1, #4f46e5);
-      --ai-bubble: rgba(27, 30, 43, 0.85);
+      --ai-bubble: rgba(27, 30, 43, 0.9);
       --danger: #ef4444;
       --success: #10b981;
       --warning: #f59e0b;
@@ -40,7 +39,7 @@
       --radius-full: 9999px;
       
       --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
-      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
       --shadow-glow: 0 0 24px rgba(120, 119, 198, 0.2);
       
       --bottom-nav-height: 68px;
@@ -53,8 +52,8 @@
       --bg-primary: #f4f5fa;
       --bg-secondary: #ffffff;
       --bg-tertiary: #e9ecf5;
-      --bg-glass: rgba(255, 255, 255, 0.85);
-      --bg-glass-card: rgba(255, 255, 255, 0.9);
+      --bg-glass: rgba(255, 255, 255, 0.88);
+      --bg-glass-card: rgba(255, 255, 255, 0.92);
       --border-color: rgba(0, 0, 0, 0.08);
       --border-active: rgba(99, 102, 241, 0.35);
       --text-main: #0f172a;
@@ -88,7 +87,6 @@
       overflow: hidden;
     }
 
-    /* Mobile Container Frame for Desktop & Native full on Mobile */
     #app-container {
       width: 100%;
       height: 100vh;
@@ -110,7 +108,6 @@
       }
     }
 
-    /* TYPOGRAPHY & COMMON */
     h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
     p { line-height: 1.5; }
     
@@ -138,7 +135,6 @@
       z-index: 20;
     }
 
-    /* HEADER */
     .app-header {
       height: var(--header-height);
       padding: 0 16px;
@@ -157,7 +153,6 @@
       font-size: 1.15rem;
       font-weight: 700;
       background: var(--accent-gradient);
-      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -195,7 +190,6 @@
       fill: none;
     }
 
-    /* SCROLLABLE CONTENT */
     .screen-content {
       flex: 1;
       overflow-y: auto;
@@ -213,7 +207,6 @@
       border-radius: 4px;
     }
 
-    /* BOTTOM NAVIGATION */
     .bottom-nav {
       position: absolute;
       bottom: 0;
@@ -264,7 +257,6 @@
       stroke: url(#accent-grad-svg);
     }
 
-    /* SPLASH / AUTH SCREEN */
     #splash-screen {
       background: radial-gradient(circle at top right, #201736, var(--bg-primary) 70%);
       justify-content: space-between;
@@ -414,7 +406,6 @@
       line-height: 1.4;
     }
 
-    /* HOME SCREEN & CARDS */
     .hero-banner {
       background: linear-gradient(135deg, rgba(120, 119, 198, 0.15), rgba(255, 119, 111, 0.1));
       border: 1px solid var(--border-active);
@@ -520,7 +511,6 @@
       margin-top: 4px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
-      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -545,7 +535,6 @@
       gap: 4px;
     }
 
-    /* CHAT SCREEN */
     #chat-screen {
       background-size: cover;
       background-position: center;
@@ -691,7 +680,6 @@
       border-color: var(--border-active);
     }
 
-    /* THINKING INDICATOR */
     .thinking-card {
       background: rgba(120, 119, 198, 0.1);
       border: 1px dashed var(--accent-primary);
@@ -723,7 +711,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* ATTACHMENT PREVIEW */
     .attachment-preview-box {
       margin-bottom: 8px;
       border-radius: var(--radius-md);
@@ -741,7 +728,6 @@
       border-radius: var(--radius-md);
     }
 
-    /* CHAT INPUT BAR */
     .chat-bottom-bar {
       position: absolute;
       bottom: 0;
@@ -821,7 +807,6 @@
       transform: scale(0.92);
     }
 
-    /* MODALS & DRAWERS */
     .modal-overlay {
       position: absolute;
       top: 0;
@@ -887,7 +872,6 @@
       gap: 10px;
     }
 
-    /* FORM ELEMENTS */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -902,12 +886,6 @@
       justify-content: space-between;
     }
 
-    .form-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    /* SETTINGS LISTS */
     .settings-section {
       background: var(--bg-glass-card);
       border: 1px solid var(--border-color);
@@ -955,7 +933,6 @@
       color: var(--text-muted);
     }
 
-    /* STATUS BADGE */
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -971,7 +948,6 @@
     .status-badge.error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
     .status-badge.unconfigured { background: rgba(148, 153, 173, 0.15); color: #9499ad; }
 
-    /* TOAST NOTIFICATION */
     #toast {
       position: absolute;
       top: 20px;
@@ -999,13 +975,11 @@
       opacity: 1;
     }
 
-    /* UTILITY HELPERS */
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- SVG Gradient definition -->
   <svg width="0" height="0" style="position:absolute">
     <defs>
       <linearGradient id="accent-grad-svg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1017,7 +991,6 @@
 
   <div id="app-container">
 
-    <!-- TOAST -->
     <div id="toast"><span>Toast message</span></div>
 
     <!-- 1. SPLASH / AUTH SCREEN -->
@@ -1032,7 +1005,7 @@
           </svg>
         </div>
         <h1 class="splash-title">Aetheria AI</h1>
-        <p class="splash-subtitle">Mobilné AI Character Studio s vlastnou pamäťou a multi-provider enginom.</p>
+        <p class="splash-subtitle">Mobilné AI Character Studio s vlastnou pamäťou, Groq a Gemini enginom.</p>
       </div>
 
       <div class="auth-box">
@@ -1050,12 +1023,12 @@
         </form>
 
         <p class="auth-disclaimer">
-          ⚠️ <strong>Lokálny účet:</strong> Všetky profily a kľúče sa ukladajú výhradne vo vašom prehliadači (IndexedDB). Nevytvára sa žiadny externý cloud účet.
+          ⚠️ <strong>Lokálny účet:</strong> Všetky profily a API kľúče sa ukladajú výhradne lokálne vo vašom prehliadači (IndexedDB).
         </p>
       </div>
     </div>
 
-    <!-- 2. HOME SCREEN (Characters Discovery) -->
+    <!-- 2. HOME SCREEN -->
     <div id="home-screen" class="screen">
       <div class="app-header">
         <div class="header-title">Aetheria</div>
@@ -1085,9 +1058,7 @@
           <div class="filter-pill" onclick="setCharFilter('favorites', this)">Obľúbené ⭐</div>
         </div>
 
-        <div class="character-grid" id="characters-container">
-          <!-- Characters dynamically rendered -->
-        </div>
+        <div class="character-grid" id="characters-container"></div>
       </div>
     </div>
 
@@ -1102,9 +1073,7 @@
         </div>
       </div>
 
-      <div class="screen-content" id="chats-list-container">
-        <!-- Chats dynamically rendered -->
-      </div>
+      <div class="screen-content" id="chats-list-container"></div>
     </div>
 
     <!-- 4. CHAT ROOM SCREEN -->
@@ -1134,12 +1103,8 @@
         </div>
       </div>
 
-      <!-- Messages container -->
-      <div class="chat-container" id="chat-messages">
-        <!-- Messages rendered here -->
-      </div>
+      <div class="chat-container" id="chat-messages"></div>
 
-      <!-- Bottom Chat input bar -->
       <div class="chat-bottom-bar">
         <div id="pending-attachment" class="chat-pending-media hidden">
           <span id="pending-preview-slot"></span>
@@ -1162,7 +1127,7 @@
       </div>
     </div>
 
-    <!-- 5. SETTINGS SCREEN -->
+    <!-- 5. SETTINGS SCREEN (Groq & Gemini API Keys) -->
     <div id="settings-screen" class="screen">
       <div class="app-header">
         <div class="header-title">Nastavenia</div>
@@ -1184,25 +1149,25 @@
           </div>
         </div>
 
-        <!-- AI Providers (Groq & Gemini) -->
+        <!-- AI Providers: Groq & Google Gemini -->
         <div class="settings-section">
           <div class="settings-section-title">
             <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             AI Poskytovatelia & API Kľúče
           </div>
 
-          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 10px; margin-bottom: 12px; font-size: 11px; color: #f87171; line-height: 1.4;">
-            ⚠️ <strong>Bezpečnostné upozornenie:</strong> API kľúče zadané v klientskom HTML sa ukladajú iba vo vašom lokálnom prehliadači. Pre bezpečné produkčné nasadenie použite backend proxy.
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 10px; margin-bottom: 14px; font-size: 11px; color: #f87171; line-height: 1.4;">
+            ⚠️ <strong>Upozornenie:</strong> API kľúče sa ukladajú výhradne vo vašom prehliadači (IndexedDB/LocalStorage).
           </div>
 
-          <!-- GROQ -->
-          <div class="form-group" style="margin-bottom: 14px;">
+          <!-- 1. GROQ API KEY -->
+          <div class="form-group" style="margin-bottom: 16px;">
             <div class="form-label">
               <span>Groq API Key</span>
               <span id="groq-status-badge" class="status-badge unconfigured">Nenastavené</span>
             </div>
             <div style="display: flex; gap: 8px;">
-              <input type="password" id="groq-api-key" class="input-field" placeholder="gsk_..." />
+              <input type="password" id="groq-api-key" class="input-field" placeholder="gsk_..." onchange="saveGroqKeyDirectly(this.value)" />
               <button class="mini-btn" onclick="togglePasswordVisibility('groq-api-key')">👁️</button>
             </div>
             <div style="display: flex; gap: 6px; margin-top: 6px;">
@@ -1211,14 +1176,14 @@
             </div>
           </div>
 
-          <!-- GEMINI -->
-          <div class="form-group">
+          <!-- 2. GOOGLE GEMINI API KEY -->
+          <div class="form-group" style="margin-bottom: 16px;">
             <div class="form-label">
               <span>Google Gemini API Key</span>
               <span id="gemini-status-badge" class="status-badge unconfigured">Nenastavené</span>
             </div>
             <div style="display: flex; gap: 8px;">
-              <input type="password" id="gemini-api-key" class="input-field" placeholder="AIzaSy..." />
+              <input type="password" id="gemini-api-key" class="input-field" placeholder="AIzaSy..." onchange="saveGeminiKeyDirectly(this.value)" />
               <button class="mini-btn" onclick="togglePasswordVisibility('gemini-api-key')">👁️</button>
             </div>
             <div style="display: flex; gap: 6px; margin-top: 6px;">
@@ -1227,16 +1192,16 @@
             </div>
           </div>
 
-          <!-- Active Provider Selector -->
-          <div class="form-group" style="margin-top: 14px;">
-            <label class="form-label">Predvolený AI Model</label>
+          <!-- Dynamic Model Selection -->
+          <div class="form-group">
+            <label class="form-label">Aktívny AI Model</label>
             <select id="global-model-select" class="input-field" onchange="saveGlobalModel(this.value)">
               <option value="auto">Auto Provider (Groq / Gemini podľa dostupnosti)</option>
             </select>
           </div>
         </div>
 
-        <!-- Text to Speech -->
+        <!-- Voice / TTS Settings -->
         <div class="settings-section">
           <div class="settings-section-title">
             <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
@@ -1252,7 +1217,7 @@
           </div>
         </div>
 
-        <!-- Appearance & UI -->
+        <!-- Appearance -->
         <div class="settings-section">
           <div class="settings-section-title">
             <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
@@ -1288,7 +1253,7 @@
       </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR -->
+    <!-- BOTTOM NAVIGATION -->
     <nav class="bottom-nav" id="bottom-nav">
       <div class="nav-item active" data-screen="home" onclick="navigate('home')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -1330,7 +1295,7 @@
 
           <div class="form-group">
             <label class="form-label">Profilová Fotka (Avatar URL alebo Nahraj)</label>
-            <input type="text" id="char-avatar-url" class="input-field" placeholder="https://... alebo vyber súbor nižšie" />
+            <input type="text" id="char-avatar-url" class="input-field" placeholder="https://... alebo vyber súbor" />
             <input type="file" id="char-avatar-file" accept="image/*" class="input-field" style="padding:8px;" onchange="handleImageUploadToInput(this, 'char-avatar-url')" />
           </div>
 
@@ -1341,17 +1306,17 @@
 
           <div class="form-group">
             <label class="form-label">Pozdravná Správa (Úvod chatu)</label>
-            <textarea id="char-greeting-input" class="input-field" rows="2" placeholder="Ahoj. Potrebuješ niečo dešifrovať, alebo sa len tak pozeráš?"></textarea>
+            <textarea id="char-greeting-input" class="input-field" rows="2" placeholder="Ahoj. Potrebuješ niečo dešifrovať?"></textarea>
           </div>
 
           <div class="form-group">
             <label class="form-label">Osobnosť & Tón reči (Personality)</label>
-            <textarea id="char-personality-input" class="input-field" rows="3" placeholder="Sarkastická, inteligentná, priama, používa hackerský slang..."></textarea>
+            <textarea id="char-personality-input" class="input-field" rows="3" placeholder="Sarkastická, inteligentná, priama..."></textarea>
           </div>
 
           <div class="form-group">
             <label class="form-label">Pozadie postavy (Backstory & Facts)</label>
-            <textarea id="char-backstory-input" class="input-field" rows="3" placeholder="Vyrastala v podzemnom sektore Neo-Bratislavy..."></textarea>
+            <textarea id="char-backstory-input" class="input-field" rows="3" placeholder="Vyrastala v podzemnom sektore..."></textarea>
           </div>
 
           <div class="form-group">
@@ -1379,7 +1344,7 @@
       </div>
     </div>
 
-    <!-- MODAL: TRAIN CHARACTER & CONTEXT MEMORY -->
+    <!-- MODAL: TRAIN CHARACTER & MEMORY -->
     <div class="modal-overlay" id="train-modal">
       <div class="modal-sheet">
         <div class="modal-header">
@@ -1388,24 +1353,22 @@
         </div>
         <div class="modal-body">
           <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4; background: var(--bg-tertiary); padding: 10px; border-radius: 8px;">
-            ℹ️ <strong>Character Prompt Context:</strong> Tieto fakty a spomienky sa automaticky vkladajú do kontextu AI pri každej konverzácii. Nejde o re-trénovanie váh modelu.
+            ℹ️ <strong>Character Prompt Context:</strong> Fakty a spomienky sa automaticky vkladajú do kontextu AI pri každej konverzácii.
           </div>
 
           <div class="form-group">
             <label class="form-label">Pridať novú vedomosť / spomienku</label>
-            <textarea id="new-memory-input" class="input-field" rows="2" placeholder="napr. Používateľ má rád kyberpunkové hry a študuje programovanie."></textarea>
+            <textarea id="new-memory-input" class="input-field" rows="2" placeholder="napr. Používateľ študuje programovanie a má rád sci-fi."></textarea>
             <button class="btn btn-secondary" style="margin-top: 6px;" onclick="addMemoryToActiveCharacter()">+ Pridať do pamäte</button>
           </div>
 
           <div class="settings-section-title" style="margin-top: 10px;">Uložené spomienky postavy</div>
-          <div id="character-memories-list" style="display: flex; flex-direction: column; gap: 8px;">
-            <!-- Rendered memories -->
-          </div>
+          <div id="character-memories-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
       </div>
     </div>
 
-    <!-- MODAL: WALLPAPER CUSTOMIZATION -->
+    <!-- MODAL: WALLPAPER -->
     <div class="modal-overlay" id="wallpaper-modal">
       <div class="modal-sheet">
         <div class="modal-header">
@@ -1430,7 +1393,7 @@
       </div>
     </div>
 
-    <!-- MODAL: ATTACHMENT PICKER -->
+    <!-- MODAL: ATTACHMENTS -->
     <div class="modal-overlay" id="attachment-modal">
       <div class="modal-sheet">
         <div class="modal-header">
@@ -1447,20 +1410,14 @@
               🎥 <span>Video (MP4/WebM)</span>
             </button>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
-            Multimodálny vstup je podporovaný na modeloch Gemini a Groq Vision. Ak model nepodporuje video, AI vás o tom čestne informuje.
-          </div>
         </div>
       </div>
     </div>
 
-  </div> <!-- End App Container -->
+  </div>
 
-  <!-- APPLICATION JAVASCRIPT LOGIC -->
   <script>
-    /* ==========================================================================
-       1. DATABASE & STORAGE LAYER (IndexedDB)
-       ========================================================================== */
+    /* 1. DATABASE & STORAGE (IndexedDB) */
     const DB_NAME = 'AetheriaAIDB';
     const DB_VERSION = 1;
     let db = null;
@@ -1545,9 +1502,7 @@
       });
     }
 
-    /* ==========================================================================
-       2. APPLICATION STATE
-       ========================================================================== */
+    /* 2. STATE */
     const state = {
       currentUser: null,
       activeScreen: 'splash',
@@ -1563,7 +1518,7 @@
       ttsVoice: null,
       ttsRate: 1.0,
       streamingEnabled: true,
-      pendingAttachment: null, // { type: 'image'|'video', dataUrl, name, size }
+      pendingAttachment: null,
       charactersFilter: 'all',
       searchQuery: ''
     };
@@ -1578,7 +1533,7 @@
         greeting: 'Systémy sú online. Hľadáte niečo konkrétne v sieti, alebo potrebujete dešifrovať dáta?',
         personality: 'Bystrá, pragmatická, mierne tajomná s jemným suchým humorom.',
         backstory: 'Bývalá bezpečnostná konzultantka v Neo-Bratislave v roku 2088.',
-        systemInstructions: 'Správaj sa ako Aria Vance. Odpovedaj v slovenskom jazyku, udržuj futuristický tón a buď priateľská, no profesionálna.',
+        systemInstructions: 'Správaj sa ako Aria Vance. Odpovedaj v slovenskom jazyku, udržuj futuristický tón.',
         temperature: 0.7,
         favorite: true,
         creator: 'system'
@@ -1591,30 +1546,26 @@
         tagline: 'Filozof, historik a trpezlivý mentor',
         greeting: 'Zdravím ťa, priateľu. O čom dnes budeme premýšľať? O tajomstvách vesmíru či ľudskej mysle?',
         personality: 'Pokojný, hĺbavý, empatický, cituje starých mysliteľov a kladie podnetné otázky.',
-        backstory: 'Celý život zasvätil štúdiu antickej múdrosti a etiky vedy.',
-        systemInstructions: 'Hovor ako múdry a láskavý filozof. Ponúkaj rôzne pohľady na životné otázky a inšpiruj k zamysleniu.',
+        backstory: 'Celý život zasvätil štúdiu múdrosti a etiky.',
+        systemInstructions: 'Hovor ako múdry a láskavý filozof. Inšpiruj k zamysleniu.',
         temperature: 0.6,
         favorite: false,
         creator: 'system'
       }
     ];
 
-    /* ==========================================================================
-       3. INITIALIZATION & AUTHENTICATION
-       ========================================================================== */
+    /* 3. APP INIT & AUTH */
     window.addEventListener('DOMContentLoaded', async () => {
       await openDatabase();
       await loadInitialSettings();
       await seedDefaultCharacters();
       initSpeechSynthesis();
 
-      // Check existing session
       const savedUser = localStorage.getItem('aetheria_session_user');
       if (savedUser) {
         state.currentUser = savedUser;
         updateUserUI();
         navigate('home');
-        showToast(`Vitaj späť, ${savedUser}!`);
       }
     });
 
@@ -1700,21 +1651,17 @@
       document.getElementById('settings-username-display').innerText = state.currentUser || 'Hosť';
     }
 
-    /* ==========================================================================
-       4. NAVIGATION & ROUTER
-       ========================================================================== */
+    /* 4. NAVIGATION */
     function navigate(screenId) {
       state.activeScreen = screenId;
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       const targetScreen = document.getElementById(`${screenId}-screen`);
       if (targetScreen) targetScreen.classList.add('active');
 
-      // Update bottom nav
       document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.toggle('active', item.dataset.screen === screenId);
       });
 
-      // Bottom nav visibility
       const bottomNav = document.getElementById('bottom-nav');
       if (screenId === 'splash' || screenId === 'chat') {
         bottomNav.classList.add('hidden');
@@ -1726,9 +1673,7 @@
       if (screenId === 'chats') renderChatsList();
     }
 
-    /* ==========================================================================
-       5. CHARACTERS CONTROLLER
-       ========================================================================== */
+    /* 5. CHARACTERS */
     async function renderCharacters() {
       const container = document.getElementById('characters-container');
       const allCharacters = await dbGetAll('characters');
@@ -1808,9 +1753,7 @@
       }
     }
 
-    /* ==========================================================================
-       6. CHARACTER EDITOR & CREATION
-       ========================================================================== */
+    /* 6. CHARACTER EDITOR */
     function openCreateModal() {
       document.getElementById('editor-modal-title').innerText = 'Vytvoriť AI Postavu';
       document.getElementById('char-edit-id').value = '';
@@ -1879,16 +1822,13 @@
       renderCharacters();
     }
 
-    /* ==========================================================================
-       7. CHAT LOGIC & ENGINE
-       ========================================================================== */
+    /* 7. CHAT LOGIC */
     async function openChatWithCharacter(charId) {
       const char = await dbGet('characters', charId);
       if (!char) return;
 
       state.activeCharacter = char;
 
-      // Find or create chat session
       const existingChats = await dbGetAll('chats');
       let chat = existingChats.find(c => c.characterId === charId && c.user === state.currentUser);
 
@@ -1903,7 +1843,6 @@
         };
         await dbPut('chats', chat);
 
-        // Add greeting message
         if (char.greeting) {
           await dbPut('messages', {
             chatId: chat.id,
@@ -1916,12 +1855,10 @@
 
       state.activeChatId = chat.id;
 
-      // Update UI Header
       document.getElementById('chat-header-name').innerText = char.name;
       document.getElementById('chat-header-avatar').src = char.avatar || 'https://via.placeholder.com/150';
       document.getElementById('chat-header-model').innerText = `Model: ${state.selectedModel}`;
 
-      // Apply character wallpaper if any
       applyWallpaper(chat.wallpaper);
 
       navigate('chat');
@@ -1974,7 +1911,6 @@
 
     async function handleSendMessage() {
       if (state.isGenerating) {
-        // Cancel generating
         if (state.abortController) {
           state.abortController.abort();
           state.abortController = null;
@@ -1989,7 +1925,6 @@
 
       if (!text && !attachment) return;
 
-      // Save user message
       const userMsg = {
         chatId: state.activeChatId,
         sender: 'user',
@@ -2000,13 +1935,11 @@
 
       await dbPut('messages', userMsg);
 
-      // Reset input bar
       input.value = '';
       input.style.height = '42px';
       clearPendingAttachment();
       await renderMessages();
 
-      // Trigger AI Response
       await triggerAiResponse();
     }
 
@@ -2015,7 +1948,6 @@
 
       const messagesContainer = document.getElementById('chat-messages');
 
-      // Add Thinking indicator
       const thinkingEl = document.createElement('div');
       thinkingEl.id = 'ai-thinking-card';
       thinkingEl.className = 'message-group ai';
@@ -2034,7 +1966,6 @@
       try {
         state.abortController = new AbortController();
 
-        // 1. Prepare context & memories
         const characterMemories = await dbGetByIndex('memories', 'characterId', state.activeCharacter.id);
         const memoryContext = characterMemories.map(m => `- ${m.content}`).join('\n');
 
@@ -2044,13 +1975,10 @@ Osobnosť: ${state.activeCharacter.personality || ''}
 Pozadie: ${state.activeCharacter.backstory || ''}
 Inštrukcie: ${state.activeCharacter.systemInstructions || ''}
 
-Získané vedomosti a spomienky:
+Uložené spomienky a kontext:
 ${memoryContext || 'Žiadne ďalšie spomienky.'}
-
-Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
         `.trim();
 
-        // 2. Fetch recent conversation history
         const allMsgs = await dbGetByIndex('messages', 'chatId', state.activeChatId);
         const lastMsgs = allMsgs.slice(-10);
 
@@ -2058,12 +1986,10 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
         let targetBubble = null;
 
         const onToken = (token) => {
-          // Remove thinking element on first token
           const tEl = document.getElementById('ai-thinking-card');
           if (tEl) {
             tEl.remove();
 
-            // Create actual AI message bubble for streaming
             const streamEl = document.createElement('div');
             streamEl.className = 'message-group ai';
             streamEl.id = 'streaming-msg-group';
@@ -2084,7 +2010,6 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
           }
         };
 
-        // 3. Dispatch to chosen provider (Groq or Gemini)
         const provider = resolveProvider();
 
         if (provider === 'groq') {
@@ -2108,12 +2033,10 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
             onToken: state.streamingEnabled ? onToken : null
           });
         } else {
-          // Offline Simulation / Prompt to add API keys
           await new Promise(r => setTimeout(r, 1200));
-          aiFullText = `[Demo Režim] Ahoj! Na generovanie plnohodnotných AI odpovedí prosím vlož svoj bezplatný Groq alebo Google Gemini API kľúč v sekcii Nastavenia.`;
+          aiFullText = `[Demo Režim] Prosím, zadaj svoj Groq alebo Google Gemini API kľúč v Nastaveniach pre plnohodnotné odpovede modelu.`;
         }
 
-        // Save AI message to DB
         await dbPut('messages', {
           chatId: state.activeChatId,
           sender: 'ai',
@@ -2126,7 +2049,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
           showToast('Generovanie bolo zastavené.');
         } else {
           console.error(err);
-          showToast(`Chyba API: ${err.message || 'Nepodarilo sa vygenerovať odpoveď'}`);
+          showToast(`Chyba API: ${err.message || 'Chyba spojenia'}`);
         }
       } finally {
         const tEl = document.getElementById('ai-thinking-card');
@@ -2140,7 +2063,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
     }
 
     function resolveProvider() {
-      if (state.groqKey && (state.selectedModel.includes('llama') || state.selectedModel.includes('mixtral') || state.selectedModel.includes('gemma') || !state.geminiKey)) {
+      if (state.groqKey && (state.selectedModel.includes('llama') || state.selectedModel.includes('mixtral') || !state.geminiKey)) {
         return 'groq';
       }
       if (state.geminiKey) {
@@ -2151,7 +2074,6 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
     function setGeneratingState(isGen) {
       state.isGenerating = isGen;
-      const sendBtn = document.getElementById('chat-send-btn');
       const sendIcon = document.getElementById('send-icon');
       const stopIcon = document.getElementById('stop-icon');
 
@@ -2174,19 +2096,14 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       }
     }
 
-    /* ==========================================================================
-       8. API CONNECTORS (Groq & Gemini Streaming)
-       ========================================================================== */
+    /* 8. API CALLS: GROQ & GEMINI */
     async function callGroqApi({ apiKey, model, systemPrompt, messages, temperature, signal, onToken }) {
       const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
 
-      const formattedMessages = [
-        { role: 'system', content: systemPrompt }
-      ];
+      const formattedMessages = [{ role: 'system', content: systemPrompt }];
 
       for (const m of messages) {
         if (m.attachment && m.attachment.type.startsWith('image')) {
-          // Groq Vision format
           formattedMessages.push({
             role: m.sender === 'user' ? 'user' : 'assistant',
             content: [
@@ -2327,9 +2244,19 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       }
     }
 
-    /* ==========================================================================
-       9. PROVIDER DISCOVERY & TESTING
-       ========================================================================== */
+    /* 9. KEY MANAGEMENT & MODEL DISCOVERY */
+    async function saveGroqKeyDirectly(val) {
+      state.groqKey = val.trim();
+      await dbPut('settings', { key: 'groqKey', value: state.groqKey });
+      if (state.groqKey) testGroqConnection();
+    }
+
+    async function saveGeminiKeyDirectly(val) {
+      state.geminiKey = val.trim();
+      await dbPut('settings', { key: 'geminiKey', value: state.geminiKey });
+      if (state.geminiKey) testGeminiConnection();
+    }
+
     async function testGroqConnection(notify = true) {
       const key = document.getElementById('groq-api-key').value.trim();
       const badge = document.getElementById('groq-status-badge');
@@ -2347,7 +2274,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
         const res = await fetch('https://api.groq.com/openai/v1/models', {
           headers: { 'Authorization': `Bearer ${key}` }
         });
-        if (!res.ok) throw new Error('Neplatný API kľúč');
+        if (!res.ok) throw new Error('Neplatný kľúč');
         const data = await res.json();
 
         state.groqKey = key;
@@ -2356,7 +2283,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
         badge.className = 'status-badge connected';
         badge.innerText = 'Pripojené ✓';
-        if (notify) showToast(`Groq úspešne pripojený (${state.groqModels.length} modelov)`);
+        if (notify) showToast(`Groq pripojený (${state.groqModels.length} modelov)`);
         populateModelDropdown();
       } catch (err) {
         badge.className = 'status-badge error';
@@ -2380,7 +2307,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
       try {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-        if (!res.ok) throw new Error('Neplatný Google API kľúč');
+        if (!res.ok) throw new Error('Neplatný kľúč');
         const data = await res.json();
 
         state.geminiKey = key;
@@ -2389,7 +2316,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
         badge.className = 'status-badge connected';
         badge.innerText = 'Pripojené ✓';
-        if (notify) showToast(`Gemini úspešne pripojené (${state.geminiModels.length} modelov)`);
+        if (notify) showToast(`Gemini pripojené (${state.geminiModels.length} modelov)`);
         populateModelDropdown();
       } catch (err) {
         badge.className = 'status-badge error';
@@ -2428,7 +2355,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
     async function saveGlobalModel(val) {
       state.selectedModel = val;
       await dbPut('settings', { key: 'selectedModel', value: val });
-      showToast(`Model nastavený na: ${val}`);
+      showToast(`Model: ${val}`);
     }
 
     async function clearApiKey(provider) {
@@ -2449,9 +2376,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       showToast('Kľúč bol vymazaný');
     }
 
-    /* ==========================================================================
-       10. TEXT-TO-SPEECH (Web Speech API)
-       ========================================================================== */
+    /* 10. TEXT TO SPEECH */
     function initSpeechSynthesis() {
       if ('speechSynthesis' in window) {
         const updateVoices = () => {
@@ -2468,7 +2393,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
     function speakText(text) {
       if (!('speechSynthesis' in window)) {
-        showToast('Váš prehliadač nepodporuje prevod textu na reč.');
+        showToast('Prehliadač nepodporuje prevod textu na reč.');
         return;
       }
       window.speechSynthesis.cancel();
@@ -2483,7 +2408,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       }
 
       window.speechSynthesis.speak(utterance);
-      showToast('Prehrávam hlas postavy 🔊');
+      showToast('Prehrávam hlas 🔊');
     }
 
     function updateTtsRate(rate) {
@@ -2492,9 +2417,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       dbPut('settings', { key: 'ttsRate', value: state.ttsRate });
     }
 
-    /* ==========================================================================
-       11. ATTACHMENTS & MEDIA PICKER
-       ========================================================================== */
+    /* 11. ATTACHMENTS & MEDIA */
     function openAttachmentMenu() {
       openModal('attachment-modal');
     }
@@ -2541,9 +2464,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       document.getElementById('media-file-input').value = '';
     }
 
-    /* ==========================================================================
-       12. WALLPAPERS & CUSTOMIZATION
-       ========================================================================== */
+    /* 12. WALLPAPERS */
     function openWallpaperModal() {
       openModal('wallpaper-modal');
     }
@@ -2556,7 +2477,6 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
         const dataUrl = e.target.result;
         applyWallpaper(dataUrl);
 
-        // Save to active chat
         if (state.activeChatId) {
           const chat = await dbGet('chats', state.activeChatId);
           if (chat) {
@@ -2564,7 +2484,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
             await dbPut('chats', chat);
           }
         }
-        showToast('Tapeta bola aktualizovaná');
+        showToast('Tapeta nastavená');
       };
       reader.readAsDataURL(file);
     }
@@ -2601,9 +2521,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       document.getElementById('chat-wallpaper-overlay').style.backdropFilter = `blur(${val}px)`;
     }
 
-    /* ==========================================================================
-       13. CHARACTER MEMORY & CONTEXT TRAINING
-       ========================================================================== */
+    /* 13. MEMORY & TRAINING */
     async function openTrainModal() {
       if (!state.activeCharacter) return;
       await renderCharacterMemories();
@@ -2640,7 +2558,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
 
       input.value = '';
       await renderCharacterMemories();
-      showToast('Spomienka uložená do pamäte postavy');
+      showToast('Spomienka uložená do pamäte');
     }
 
     async function deleteMemory(id) {
@@ -2649,9 +2567,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       showToast('Spomienka odstránená');
     }
 
-    /* ==========================================================================
-       14. CHATS LIST VIEW
-       ========================================================================== */
+    /* 14. CHATS LIST */
     async function renderChatsList() {
       const container = document.getElementById('chats-list-container');
       const chats = await dbGetAll('chats');
@@ -2701,7 +2617,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
     }
 
     async function clearAllChatsPrompt() {
-      if (confirm('Vymazať celú históriu všetkých chatov?')) {
+      if (confirm('Vymazať históriu všetkých chatov?')) {
         const chats = await dbGetAll('chats');
         for (const c of chats) {
           if (c.user === state.currentUser) {
@@ -2715,9 +2631,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
       }
     }
 
-    /* ==========================================================================
-       15. UTILITIES & MODAL HELPERS
-       ========================================================================= */
+    /* 15. UTILITIES */
     function openModal(id) {
       document.getElementById(id).classList.add('active');
     }
@@ -2796,7 +2710,7 @@ Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
     }
 
     async function wipeEntireDatabasePrompt() {
-      if (confirm('POZOR: Naozaj chcete vymazať celú lokálnu databázu vrátane postáv a nastavení?')) {
+      if (confirm('POZOR: Naozaj chcete vymazať celú lokálnu databázu?')) {
         indexedDB.deleteDatabase(DB_NAME);
         localStorage.clear();
         location.reload();
