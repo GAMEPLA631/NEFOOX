@@ -1,784 +1,2819 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="sk" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NEXUS AI – Vytvor si svoju AI</title>
-<style>
-  :root{
-    --bg:#0a0a0f; --card:#14141d; --card2:#1c1c28; --line:#262635;
-    --txt:#f2f2f7; --mut:#8e8ea0; --acc:#8b5cf6; --acc2:#06b6d4;
-    --grad:linear-gradient(135deg,#8b5cf6,#06b6d4);
-    --r:16px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
-  body{
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-    background:radial-gradient(1200px 800px at 20% -10%,#1e1b4b 0%,transparent 60%),
-               radial-gradient(1000px 700px at 110% 110%,#083344 0%,transparent 55%),#050508;
-    color:var(--txt); display:flex; justify-content:center; align-items:stretch;
-  }
-  /* ===== Telefónny rám ===== */
-  #phone{
-    width:100%; max-width:430px; height:100dvh; background:var(--bg);
-    display:flex; flex-direction:column; position:relative; overflow:hidden;
-    box-shadow:0 0 60px rgba(139,92,246,.15);
-  }
-  @media(min-width:500px){ body{padding:16px 0} #phone{height:calc(100dvh - 32px); border-radius:36px; border:1px solid var(--line)} }
-  .screen{display:none; flex:1; flex-direction:column; overflow:hidden}
-  .screen.active{display:flex}
-  .hidden{display:none!important}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Aetheria AI - Mobile Character Studio</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  /* ===== Scrollbare ===== */
-  ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-thumb{background:#333; border-radius:4px}
+  <style>
+    :root {
+      --bg-primary: #090a0f;
+      --bg-secondary: #12141c;
+      --bg-tertiary: #1b1e2b;
+      --bg-glass: rgba(18, 20, 28, 0.75);
+      --bg-glass-card: rgba(27, 30, 43, 0.65);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(120, 119, 198, 0.35);
+      --text-main: #f3f4f8;
+      --text-secondary: #9499ad;
+      --text-muted: #5e647c;
+      
+      --accent-gradient: linear-gradient(135deg, #7877c6 0%, #ff776f 100%);
+      --accent-primary: #7877c6;
+      --accent-glow: rgba(120, 119, 198, 0.25);
+      --user-bubble: #6366f1;
+      --user-bubble-gradient: linear-gradient(135deg, #6366f1, #4f46e5);
+      --ai-bubble: rgba(27, 30, 43, 0.85);
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --shadow-glow: 0 0 24px rgba(120, 119, 198, 0.2);
+      
+      --bottom-nav-height: 68px;
+      --header-height: 60px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --chat-font-size: 15px;
+    }
 
-  /* ===== AUTH ===== */
-  #authScreen{justify-content:center; padding:28px; background:
-    radial-gradient(600px 400px at 80% 0%,rgba(139,92,246,.25),transparent 60%),
-    radial-gradient(500px 400px at 0% 100%,rgba(6,182,212,.18),transparent 60%),var(--bg)}
-  .logo{text-align:center; margin-bottom:26px}
-  .logo .orb{width:84px;height:84px;margin:0 auto 14px;border-radius:28px;background:var(--grad);
-    display:grid;place-items:center;font-size:40px;box-shadow:0 10px 40px rgba(139,92,246,.5);animation:float 3s ease-in-out infinite}
-  @keyframes float{50%{transform:translateY(-8px)}}
-  .logo h1{font-size:30px;letter-spacing:1px}
-  .logo h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .logo p{color:var(--mut);font-size:13px;margin-top:4px}
-  .glass{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px);border-radius:22px;padding:22px}
-  .tabs{display:flex;background:#101018;border-radius:14px;padding:4px;margin-bottom:18px}
-  .tabs button{flex:1;padding:10px;border:0;background:transparent;color:var(--mut);border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;transition:.25s}
-  .tabs button.on{background:var(--grad);color:#fff}
-  .field{margin-bottom:14px}
-  .field label{font-size:12px;color:var(--mut);display:block;margin-bottom:6px;font-weight:600}
-  input,textarea,select{
-    width:100%;background:#101018;border:1px solid var(--line);color:var(--txt);
-    border-radius:13px;padding:12px 14px;font-size:15px;outline:none;transition:.2s;font-family:inherit}
-  input:focus,textarea:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
-  textarea{resize:vertical;min-height:70px}
-  .btn{width:100%;padding:14px;border:0;border-radius:14px;background:var(--grad);color:#fff;
-    font-size:15px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-  .btn:active{transform:scale(.97)}
-  .btn.ghost{background:#17171f;border:1px solid var(--line)}
-  .btn.sm{width:auto;padding:9px 16px;font-size:13px;border-radius:11px}
-  .btn:disabled{opacity:.5;cursor:wait}
-  .err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:16px}
-  .hint{font-size:11px;color:var(--mut);margin-top:10px;text-align:center;line-height:1.5}
+    [data-theme="light"] {
+      --bg-primary: #f4f5fa;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e9ecf5;
+      --bg-glass: rgba(255, 255, 255, 0.85);
+      --bg-glass-card: rgba(255, 255, 255, 0.9);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-active: rgba(99, 102, 241, 0.35);
+      --text-main: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --ai-bubble: rgba(255, 255, 255, 0.95);
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+    }
 
-  /* ===== Hlavičky obrazoviek ===== */
-  .topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0;background:rgba(10,10,15,.8);backdrop-filter:blur(10px);z-index:5}
-  .topbar h2{font-size:18px;flex:1}
-  .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--card);
-    color:var(--txt);display:grid;place-items:center;cursor:pointer;transition:.2s;font-size:17px;flex-shrink:0}
-  .icon-btn:active{transform:scale(.9)}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-  /* ===== Domov ===== */
-  #homeScroll{flex:1;overflow-y:auto;padding:16px 16px 90px}
-  .searchbox{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:20px}
-  .searchbox input{border:0;background:transparent;padding:0;box-shadow:none!important}
-  .sect{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px}
-  .sect h3{font-size:16px}
-  .sect span{font-size:12px;color:var(--acc)}
-  .row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
-  .row::-webkit-scrollbar{display:none}
-  .story{flex-shrink:0;width:96px;text-align:center;cursor:pointer}
-  .story .ava{width:88px;height:88px;border-radius:50%;padding:3px;background:var(--grad);margin:0 auto 8px}
-  .story .ava .in{width:100%;height:100%;border-radius:50%;background:var(--card2);display:grid;place-items:center;font-size:34px;overflow:hidden}
-  .story .ava img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-  .story p{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .charcard{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;cursor:pointer;transition:.2s}
-  .charcard:active{transform:scale(.98)}
-  .charcard .ava{width:56px;height:56px;border-radius:18px;background:var(--grad);display:grid;place-items:center;font-size:26px;flex-shrink:0;overflow:hidden}
-  .charcard .ava img{width:100%;height:100%;object-fit:cover}
-  .charcard h4{font-size:15px;margin-bottom:3px}
-  .charcard small{color:var(--mut);font-size:12px;display:block;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .chip{display:inline-block;font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(139,92,246,.15);color:#c4b5fd;margin-top:6px;font-weight:700}
+    input, textarea {
+      user-select: text;
+    }
 
-  /* ===== Vytvoriť ===== */
-  #createScroll{flex:1;overflow-y:auto;padding:18px 16px 100px}
-  .avatar-up{display:flex;justify-content:center;margin-bottom:18px}
-  .avatar-up .circ{width:96px;height:96px;border-radius:50%;background:var(--grad);display:grid;place-items:center;
-    font-size:38px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(139,92,246,.4)}
-  .avatar-up img{width:100%;height:100%;object-fit:cover}
-  .avatar-up .plus{position:absolute;bottom:0;right:0;width:30px;height:30px;background:#fff;color:#000;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:900}
-  .trainbox{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
-  .trainbox .ex{font-size:13px;color:var(--mut);margin-bottom:6px}
-  .trainbox .ex b{color:#a5f3fc}
+    body {
+      font-family: var(--font-sans);
+      background-color: #030407;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
 
-  /* ===== Chat ===== */
-  #chatScreen{background:var(--bg)}
-  #chatBg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
-  #chatBg::after{content:'';position:absolute;inset:0;background:rgba(8,8,12,.82)}
-  #chatScreen .topbar{position:relative;z-index:2}
-  #msgs{flex:1;overflow-y:auto;padding:18px 14px 10px;position:relative;z-index:1;display:flex;flex-direction:column;gap:14px}
-  .msg{display:flex;gap:9px;max-width:86%;animation:pop .25s ease}
-  @keyframes pop{from{opacity:0;transform:translateY(8px)}}
-  .msg .mava{width:32px;height:32px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:15px;flex-shrink:0;overflow:hidden;margin-top:2px}
-  .msg .mava img{width:100%;height:100%;object-fit:cover}
-  .bubble{background:var(--card);border:1px solid var(--line);padding:11px 14px;border-radius:4px 18px 18px 18px;font-size:14.5px;line-height:1.55;word-break:break-word}
-  .bubble code{background:#0d0d14;padding:2px 6px;border-radius:6px;color:#a5f3fc;font-size:13px}
-  .msg.me{align-self:flex-end;flex-direction:row-reverse}
-  .msg.me .bubble{background:var(--grad);border:0;border-radius:18px 4px 18px 18px}
-  .msg img.att{max-width:220px;border-radius:12px;display:block;margin-bottom:8px}
-  .mactions{display:flex;gap:8px;margin-top:7px}
-  .mactions button{background:none;border:0;color:var(--mut);cursor:pointer;font-size:15px;padding:2px 4px}
-  .mactions button.speaking{color:var(--acc2)}
-  /* Thinking indikátor */
-  .think{display:flex;align-items:center;gap:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);
-    padding:10px 16px;border-radius:18px;width:fit-content;position:relative;z-index:1}
-  .tdots{display:flex;gap:4px}
-  .tdots i{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:bounce 1.2s infinite}
-  .tdots i:nth-child(2){animation-delay:.15s} .tdots i:nth-child(3){animation-delay:.3s}
-  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
-  .ttext{font-size:12.5px;color:#c4b5fd;font-weight:600}
-  .ttext .shimmer{background:linear-gradient(90deg,#c4b5fd,#fff,#c4b5fd);background-size:200%;
-    -webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 1.6s linear infinite}
-  @keyframes sh{to{background-position:-200%}}
-  .ttime{font-size:10px;color:var(--mut);margin-left:6px}
-  .webnote{font-size:11px;color:var(--acc2);display:flex;align-items:center;gap:5px;margin-top:6px}
-  /* Input bar */
-  #inputBar{padding:10px 12px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
-    background:rgba(10,10,15,.85);backdrop-filter:blur(14px);position:relative;z-index:2}
-  #attachPrev{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-  #attachPrev .thumb{position:relative;width:54px;height:54px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
-  #attachPrev img{width:100%;height:100%;object-fit:cover}
-  #attachPrev .x{position:absolute;top:2px;right:2px;width:18px;height:18px;background:#000a;border-radius:50%;display:grid;place-items:center;font-size:11px;cursor:pointer}
-  .inrow{display:flex;gap:8px;align-items:flex-end}
-  #msgInput{flex:1;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:11px 16px;font-size:15px;max-height:110px}
-  #msgInput:focus{border-color:var(--acc)}
-  .send{width:44px;height:44px;border-radius:50%;border:0;background:var(--grad);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:grid;place-items:center;transition:.2s}
-  .send:active{transform:scale(.88)}
+    /* Mobile Container Frame for Desktop & Native full on Mobile */
+    #app-container {
+      width: 100%;
+      height: 100vh;
+      max-width: 480px;
+      max-height: 960px;
+      background-color: var(--bg-primary);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    }
 
-  /* ===== Navigácia dole ===== */
-  #bottomNav{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(12,12,18,.92);
-    backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:10}
-  .navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--mut);font-size:10.5px;font-weight:600;cursor:pointer;padding:5px}
-  .navbtn.on{color:var(--acc)}
-  .navbtn .ni{font-size:21px}
-  .navbtn.create .ni{width:52px;height:36px;border-radius:13px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 5px 18px rgba(139,92,246,.5)}
+    @media (min-width: 520px) {
+      #app-container {
+        height: 94vh;
+        border-radius: 36px;
+        border: 1px solid var(--border-color);
+      }
+    }
 
-  /* ===== Nastavenia ===== */
-  #setScroll{flex:1;overflow-y:auto;padding:18px 16px 100px}
-  .setcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px}
-  .setcard h4{font-size:14px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
-  .setcard p{font-size:12px;color:var(--mut);line-height:1.5;margin-bottom:10px}
-  .setcard a{color:var(--acc2);text-decoration:none}
-  .switch{position:relative;width:46px;height:26px;flex-shrink:0}
-  .switch input{opacity:0;width:0;height:0}
-  .switch .sl{position:absolute;inset:0;background:#2a2a3a;border-radius:20px;cursor:pointer;transition:.25s}
-  .switch .sl::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.25s}
-  .switch input:checked + .sl{background:var(--acc)}
-  .switch input:checked + .sl::before{transform:translateX(20px)}
-  .setrow{display:flex;justify-content:space-between;align-items:center}
-  .userpill{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:16px}
-  .userpill .up{width:46px;height:46px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:20px;font-weight:800}
-  .wallprev{width:100%;height:90px;border-radius:12px;border:1px solid var(--line);background:#0d0d14 center/cover;margin-bottom:8px;display:grid;place-items:center;color:var(--mut);font-size:12px}
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#1f1f2e;border:1px solid var(--acc);
-    padding:11px 20px;border-radius:14px;font-size:13px;opacity:0;transition:.3s;z-index:99;pointer-events:none;box-shadow:0 8px 30px #0008}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .modal-bg{position:absolute;inset:0;background:#000a;z-index:20;display:none;align-items:flex-end}
-  .modal-bg.show{display:flex}
-  .sheet{width:100%;background:var(--card2);border-radius:22px 22px 0 0;padding:20px;animation:up .25s ease}
-  @keyframes up{from{transform:translateY(100%)}}
-  .sheet h3{margin-bottom:14px;font-size:17px}
-</style>
+    /* TYPOGRAPHY & COMMON */
+    h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+    p { line-height: 1.5; }
+    
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.98);
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      z-index: 20;
+    }
+
+    /* HEADER */
+    .app-header {
+      height: var(--header-height);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 30;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--border-active);
+      transform: scale(1.04);
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* SCROLLABLE CONTENT */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px;
+      padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .screen-content::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    /* BOTTOM NAVIGATION */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: calc(var(--bottom-nav-height) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 40;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 600;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      height: 100%;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-item.active {
+      color: var(--accent-primary);
+    }
+    .nav-item.active svg {
+      transform: translateY(-2px);
+      stroke: url(#accent-grad-svg);
+    }
+
+    /* SPLASH / AUTH SCREEN */
+    #splash-screen {
+      background: radial-gradient(circle at top right, #201736, var(--bg-primary) 70%);
+      justify-content: space-between;
+      padding: 40px 24px 30px;
+      z-index: 100;
+    }
+
+    .splash-hero {
+      margin-top: 40px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-glow);
+      margin-bottom: 20px;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(120, 119, 198, 0.4)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 119, 111, 0.6)); }
+    }
+
+    .splash-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .splash-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 8px;
+      max-width: 280px;
+    }
+
+    .auth-box {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 18px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .auth-tab.active {
+      color: var(--text-main);
+      border-color: var(--accent-primary);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-active);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .auth-disclaimer {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+
+    /* HOME SCREEN & CARDS */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(120, 119, 198, 0.15), rgba(255, 119, 111, 0.1));
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+
+    .filter-pill {
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .filter-pill.active {
+      background: var(--accent-primary);
+      color: #fff;
+      border-color: var(--accent-primary);
+    }
+
+    .character-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .char-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .char-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+    }
+
+    .char-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-md);
+      object-fit: cover;
+      background: var(--bg-tertiary);
+      flex-shrink: 0;
+      border: 1px solid var(--border-color);
+    }
+
+    .char-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .char-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+
+    .char-name {
+      font-weight: 700;
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .char-username {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .char-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .char-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .mini-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* CHAT SCREEN */
+    #chat-screen {
+      background-size: cover;
+      background-position: center;
+    }
+
+    .chat-wallpaper-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(9, 10, 15, 0.7);
+      backdrop-filter: blur(0px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .chat-header {
+      position: relative;
+      z-index: 10;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+    }
+
+    .chat-char-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .chat-header-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+    }
+
+    .chat-container {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .message-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-group.user {
+      flex-direction: row-reverse;
+    }
+
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .msg-content-wrapper {
+      max-width: 82%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message-group.user .msg-content-wrapper {
+      align-items: flex-end;
+    }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: var(--chat-font-size);
+      line-height: 1.5;
+      position: relative;
+      word-break: break-word;
+      user-select: text;
+    }
+
+    .message-group.ai .msg-bubble {
+      background: var(--ai-bubble);
+      border: 1px solid var(--border-color);
+      border-top-left-radius: 4px;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .message-group.user .msg-bubble {
+      background: var(--user-bubble-gradient);
+      color: #ffffff;
+      border-top-right-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .msg-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      opacity: 0.85;
+    }
+
+    .msg-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: var(--radius-full);
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .msg-btn:hover {
+      color: var(--text-main);
+      border-color: var(--border-active);
+    }
+
+    /* THINKING INDICATOR */
+    .thinking-card {
+      background: rgba(120, 119, 198, 0.1);
+      border: 1px dashed var(--accent-primary);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--accent-primary);
+      animation: pulseBorder 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseBorder {
+      0%, 100% { border-color: rgba(120, 119, 198, 0.3); }
+      50% { border-color: rgba(120, 119, 198, 1); }
+    }
+
+    .thinking-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--accent-primary);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ATTACHMENT PREVIEW */
+    .attachment-preview-box {
+      margin-bottom: 8px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      max-height: 200px;
+      position: relative;
+    }
+
+    .attachment-preview-box img, 
+    .attachment-preview-box video {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: block;
+      border-radius: var(--radius-md);
+    }
+
+    /* CHAT INPUT BAR */
+    .chat-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px 12px calc(12px + var(--safe-bottom));
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-pending-media {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-pending-media img, .chat-pending-media video {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .chat-input-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .chat-textarea {
+      flex: 1;
+      min-height: 42px;
+      max-height: 120px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: var(--text-main);
+      font-size: 15px;
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+      font-family: var(--font-sans);
+    }
+
+    .chat-textarea:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .chat-send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-full);
+      background: var(--accent-gradient);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .chat-send-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* MODALS & DRAWERS */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 150;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-height: 90vh;
+      background: var(--bg-secondary);
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 10px;
+    }
+
+    /* FORM ELEMENTS */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* SETTINGS LISTS */
+    .settings-section {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .settings-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-row-info {
+      flex: 1;
+      padding-right: 12px;
+    }
+
+    .settings-row-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .settings-row-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* STATUS BADGE */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-badge.connected { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-badge.error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .status-badge.unconfigured { background: rgba(148, 153, 173, 0.15); color: #9499ad; }
+
+    /* TOAST NOTIFICATION */
+    #toast {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-active);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 999;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* UTILITY HELPERS */
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-<div id="phone">
 
-  <!-- ============ PRIHLÁSENIE / REGISTRÁCIA ============ -->
-  <section id="authScreen" class="screen active">
-    <div class="logo">
-      <div class="orb">🤖</div>
-      <h1>NEXUS <span>AI</span></h1>
-      <p>Vytvor si vlastnú AI postavu • Hovor • Trénuj</p>
+  <!-- SVG Gradient definition -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="accent-grad-svg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#7877c6" />
+        <stop offset="100%" stop-color="#ff776f" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div id="app-container">
+
+    <!-- TOAST -->
+    <div id="toast"><span>Toast message</span></div>
+
+    <!-- 1. SPLASH / AUTH SCREEN -->
+    <div id="splash-screen" class="screen active">
+      <div class="splash-hero">
+        <div class="app-logo">
+          <svg width="42" height="42" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10a9.96 9.96 0 0 1-4.587-1.112l-3.826 1.077a1 1 0 0 1-1.238-1.238l1.077-3.826A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2z"/>
+            <circle cx="8" cy="12" r="1.5" fill="#fff" />
+            <circle cx="12" cy="12" r="1.5" fill="#fff" />
+            <circle cx="16" cy="12" r="1.5" fill="#fff" />
+          </svg>
+        </div>
+        <h1 class="splash-title">Aetheria AI</h1>
+        <p class="splash-subtitle">Mobilné AI Character Studio s vlastnou pamäťou a multi-provider enginom.</p>
+      </div>
+
+      <div class="auth-box">
+        <div class="auth-tabs">
+          <div class="auth-tab active" onclick="switchAuthTab('login')">Prihlásiť sa</div>
+          <div class="auth-tab" onclick="switchAuthTab('register')">Registrácia</div>
+        </div>
+
+        <form class="auth-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
+          <input type="text" id="auth-username" class="input-field" placeholder="Používateľské meno" required />
+          <input type="password" id="auth-password" class="input-field" placeholder="Heslo (min. 4 znaky)" required />
+          
+          <button type="submit" class="btn btn-primary" id="auth-submit-btn">Prihlásiť sa</button>
+          <button type="button" class="btn btn-secondary" onclick="handleGuestLogin()">Pokračovať ako Hosť (Demo)</button>
+        </form>
+
+        <p class="auth-disclaimer">
+          ⚠️ <strong>Lokálny účet:</strong> Všetky profily a kľúče sa ukladajú výhradne vo vašom prehliadači (IndexedDB). Nevytvára sa žiadny externý cloud účet.
+        </p>
+      </div>
     </div>
-    <div class="glass">
-      <div class="tabs">
-        <button id="tabLogin" class="on" onclick="authTab('login')">Prihlásenie</button>
-        <button id="tabReg" onclick="authTab('reg')">Registrácia</button>
-      </div>
-      <div class="field"><label>Používateľské meno</label>
-        <input id="authUser" placeholder="napr. dusan_ai" autocomplete="username"></div>
-      <div class="field"><label>Heslo</label>
-        <input id="authPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
-      <div class="field hidden" id="pass2Wrap"><label>Potvrď heslo</label>
-        <input id="authPass2" type="password" placeholder="••••••••"></div>
-      <button class="btn" id="authBtn" onclick="doAuth()">Prihlásiť sa →</button>
-      <div class="err" id="authErr"></div>
-    </div>
-    <p class="hint">Údaje sa ukladajú bezpečne len v tomto zariadení (localStorage).<br>Pre AI funkcie potrebuješ bezplatný kľúč z <b>console.groq.com</b>.</p>
-  </section>
 
-  <!-- ============ APLIKÁCIA ============ -->
-  <div id="app" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-
-    <!-- DOMOV -->
-    <section id="homeScreen" class="screen active">
-      <div class="topbar"><h2>NEXUS <span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">AI</span></h2>
-        <button class="icon-btn" onclick="go('settings')">⚙️</button></div>
-      <div id="homeScroll">
-        <div class="searchbox">🔍<input id="searchInput" placeholder="Hľadať AI postavu..." oninput="renderHome()"></div>
-        <div class="sect"><h3>⭐ Obľúbené</h3><span>tapkni a píš</span></div>
-        <div class="row" id="storiesRow"></div>
-        <div class="sect"><h3>💬 Všetky postavy</h3><span id="charCount"></span></div>
-        <div id="charList"></div>
-      </div>
-    </section>
-
-    <!-- VYTVORIŤ / TRÉNOVAŤ -->
-    <section id="createScreen" class="screen">
-      <div class="topbar"><button class="icon-btn" onclick="go('home')">←</button>
-        <h2 id="createTitle">Vytvoriť AI postavu</h2></div>
-      <div id="createScroll">
-        <div class="avatar-up"><div class="circ" id="avatarPrev" onclick="document.getElementById('avaFile').click()">✨<div class="plus">+</div></div></div>
-        <input type="file" id="avaFile" accept="image/*" hidden onchange="pickAvatar(this)">
-        <div class="field"><label>Meno postavy *</label><input id="cName" placeholder="napr. Aria"></div>
-        <div class="field"><label>Krátky popis (tagline)</label><input id="cTag" placeholder="napr. Tvoja múdra AI kamarátka z budúcnosti"></div>
-        <div class="field"><label>Úvodná správa (pozdrav)</label><textarea id="cGreet" placeholder="Ahoj! Ja som Aria..."></textarea></div>
-        <div class="field"><label>Osobnosť & povaha AI</label><textarea id="cPers" placeholder="Opíš ako sa má AI správať: priateľská, vtipná, odborník na programovanie..."></textarea></div>
-        <div class="field"><label>Hlas (Text-to-Speech)</label>
-          <select id="cVoice"><option value="sk-SK">🇸🇰 Slovenčina (auto)</option><option value="cs-CZ">🇨🇿 Čeština</option><option value="en-US">🇬🇧 Angličtina</option></select></div>
-        <div class="sect"><h3>🎓 Tréning AI</h3></div>
-        <p style="font-size:12px;color:var(--mut);margin-bottom:10px">Nauč svoju AI príkladmi – ako má odpovedať:</p>
-        <div id="trainList"></div>
-        <button class="btn ghost sm" onclick="addTrainRow()">＋ Pridať tréningový príklad</button>
-        <div style="height:16px"></div>
-        <button class="btn" id="saveCharBtn" onclick="saveCharacter()">💾 Uložiť AI postavu</button>
-        <div style="height:12px"></div>
-        <button class="btn ghost hidden" id="deleteCharBtn" onclick="deleteCharacter()">🗑️ Zmazať postavu</button>
-      </div>
-    </section>
-
-    <!-- NASTAVENIA -->
-    <section id="settingsScreen" class="screen">
-      <div class="topbar"><button class="icon-btn" onclick="go('home')">←</button><h2>Nastavenia</h2></div>
-      <div id="setScroll">
-        <div class="userpill"><div class="up" id="userAva">D</div>
-          <div style="flex:1"><b id="userLabel">user</b><div style="font-size:12px;color:var(--mut)">NEXUS AI účet</div></div>
-          <button class="btn ghost sm" onclick="logout()">Odhlásiť</button></div>
-
-        <div class="setcard">
-          <h4>🔑 Groq API kľúč</h4>
-          <p>Získaj <b>bezplatný kľúč</b> na <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a> a vlož ho sem. Kľúč ostáva len vo tvom zariadení.</p>
-          <input id="apiKeyInput" type="password" placeholder="gsk_..." onchange="saveSettings()">
-          <p style="margin:8px 0 0">Model: 
-            <select id="modelSel" onchange="saveSettings()" style="margin-top:6px">
-              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (najlepší)</option>
-              <option value="llama-3.1-8b-instant">Llama 3.1 8B (najrýchlejší)</option>
-              <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
-            </select></p>
+    <!-- 2. HOME SCREEN (Characters Discovery) -->
+    <div id="home-screen" class="screen">
+      <div class="app-header">
+        <div class="header-title">Aetheria</div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="openCreateModal()" title="Vytvoriť postavu">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
         </div>
+      </div>
 
-        <div class="setcard">
-          <h4>🌐 Prístup na internet
-            <label class="switch" style="margin-left:auto"><input type="checkbox" id="webToggle" onchange="saveSettings()" checked><span class="sl"></span></label></h4>
-          <p>AI si dokáže vyhľadať aktuálne informácie (Wikipedia, DuckDuckGo) a použiť ich v odpovedi – tak vieš opýtať na novinky, počasie, fakty.</p>
-        </div>
-
-        <div class="setcard">
-          <h4>🗣️ Automatické čítanie (TTS)
-            <label class="switch" style="margin-left:auto"><input type="checkbox" id="ttsToggle" onchange="saveSettings()"><span class="sl"></span></label></h4>
-          <p>AI ti každú odpoveď hneď prečíta nahlas slovenským hlasom.</p>
-        </div>
-
-        <div class="setcard">
-          <h4>🖼️ Tapeta chatu</h4>
-          <p>Nastav vlastný obrázok ako pozadie chatu.</p>
-          <div class="wallprev" id="wallPrev">Žiadna tapeta</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn sm" onclick="document.getElementById('wallFile').click()">Nahrať tapetu</button>
-            <button class="btn ghost sm" onclick="clearWall()">Zmazať</button>
+      <div class="screen-content">
+        <div class="hero-banner">
+          <div>
+            <h3 style="font-size: 1.1rem; margin-bottom: 4px;">Vytvor si vlastnú AI</h3>
+            <p style="font-size: 12px; color: var(--text-secondary);">Definuj osobnosť, spomienky a štýl rozprávania.</p>
           </div>
-          <input type="file" id="wallFile" accept="image/*" hidden onchange="pickWall(this)">
+          <button class="mini-btn" style="background: var(--accent-gradient); color: #fff; border:none; padding: 8px 14px;" onclick="openCreateModal()">+ Vytvoriť</button>
         </div>
 
-        <div class="setcard"><h4>🗑️ Dáta</h4>
-          <p>Vymazať všetky chaty s postavami.</p>
-          <button class="btn ghost sm" onclick="clearAllChats()">Vymazať históriu chatov</button></div>
-      </div>
-    </section>
-
-    <!-- CHAT -->
-    <section id="chatScreen" class="screen">
-      <div id="chatBg"></div>
-      <div class="topbar">
-        <button class="icon-btn" onclick="endChat()">←</button>
-        <div id="chatAva" style="width:38px;height:38px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:18px;overflow:hidden;flex-shrink:0"></div>
-        <div style="flex:1"><b id="chatName" style="font-size:15px"></b>
-          <div style="font-size:11px;color:#4ade80;display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;background:#4ade80;border-radius:50%;display:inline-block"></span>Online</div></div>
-        <button class="icon-btn" onclick="openChatMenu()">⋮</button>
-      </div>
-      <div id="msgs"></div>
-      <div id="inputBar">
-        <div id="attachPrev"></div>
-        <div class="inrow">
-          <button class="icon-btn" onclick="document.getElementById('attFile').click()">📎</button>
-          <button class="icon-btn" id="micBtn" onclick="voiceInput()">🎤</button>
-          <textarea id="msgInput" rows="1" placeholder="Napíš správu..." oninput="growInput(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
-          <button class="send" id="sendBtn" onclick="sendMessage()">➤</button>
+        <div style="margin-bottom: 12px;">
+          <input type="text" id="search-characters" class="input-field" placeholder="Hľadať postavy..." oninput="filterCharacters()" />
         </div>
-        <input type="file" id="attFile" accept="image/*,video/*" multiple hidden onchange="pickAttachment(this)">
-      </div>
-    </section>
 
-    <!-- BOTTOM NAV -->
-    <nav id="bottomNav">
-      <button class="navbtn on" id="navHome" onclick="go('home')"><span class="ni">🏠</span>Domov</button>
-      <button class="navbtn create" id="navCreate" onclick="openCreate()"><span class="ni">＋</span>Vytvoriť</button>
-      <button class="navbtn" id="navSet" onclick="go('settings')"><span class="ni">⚙️</span>Nastavenia</button>
+        <div class="filter-pills">
+          <div class="filter-pill active" onclick="setCharFilter('all', this)">Všetky</div>
+          <div class="filter-pill" onclick="setCharFilter('mine', this)">Moje postavy</div>
+          <div class="filter-pill" onclick="setCharFilter('favorites', this)">Obľúbené ⭐</div>
+        </div>
+
+        <div class="character-grid" id="characters-container">
+          <!-- Characters dynamically rendered -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CHATS LIST SCREEN -->
+    <div id="chats-screen" class="screen">
+      <div class="app-header">
+        <div class="header-title">Konverzácie</div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="clearAllChatsPrompt()" title="Vymazať históriu">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="screen-content" id="chats-list-container">
+        <!-- Chats dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- 4. CHAT ROOM SCREEN -->
+    <div id="chat-screen" class="screen">
+      <div class="chat-wallpaper-overlay" id="chat-wallpaper-overlay"></div>
+      
+      <div class="app-header chat-header">
+        <button class="icon-btn" onclick="navigate('chats')" title="Späť">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+
+        <div class="chat-char-summary" onclick="openCharacterProfile()">
+          <img id="chat-header-avatar" src="" class="chat-header-avatar" />
+          <div>
+            <div id="chat-header-name" style="font-weight: 700; font-size: 14px;">Character Name</div>
+            <div id="chat-header-model" style="font-size: 11px; color: var(--text-muted);">Model: Auto</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="icon-btn" onclick="openTrainModal()" title="Trénovať & Pamäť">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </button>
+          <button class="icon-btn" onclick="openWallpaperModal()" title="Tapeta chatu">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages container -->
+      <div class="chat-container" id="chat-messages">
+        <!-- Messages rendered here -->
+      </div>
+
+      <!-- Bottom Chat input bar -->
+      <div class="chat-bottom-bar">
+        <div id="pending-attachment" class="chat-pending-media hidden">
+          <span id="pending-preview-slot"></span>
+          <span id="pending-filename" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">file.png</span>
+          <button class="icon-btn" style="width:24px; height:24px;" onclick="clearPendingAttachment()">✕</button>
+        </div>
+
+        <div class="chat-input-row">
+          <button class="icon-btn" onclick="openAttachmentMenu()" title="Priložiť súbor">
+            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+
+          <textarea id="chat-input" class="chat-textarea" placeholder="Napíš správu..." rows="1" onkeydown="handleChatKeyDown(event)" oninput="autoGrowTextarea(this)"></textarea>
+
+          <button id="chat-send-btn" class="chat-send-btn" onclick="handleSendMessage()">
+            <svg id="send-icon" viewBox="0 0 24 24" style="width:20px; height:20px; stroke:currentColor; stroke-width:2.5; fill:none;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            <svg id="stop-icon" class="hidden" viewBox="0 0 24 24" style="width:18px; height:18px; fill:currentColor;"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SETTINGS SCREEN -->
+    <div id="settings-screen" class="screen">
+      <div class="app-header">
+        <div class="header-title">Nastavenia</div>
+      </div>
+
+      <div class="screen-content">
+        <!-- Account Info -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Účet a Relácia
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-title" id="settings-username-display">Hosť</div>
+              <div class="settings-row-desc">Lokálna IndexedDB databáza</div>
+            </div>
+            <button class="mini-btn btn-danger" onclick="logout()">Odhlásiť sa</button>
+          </div>
+        </div>
+
+        <!-- AI Providers (Groq & Gemini) -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            AI Poskytovatelia & API Kľúče
+          </div>
+
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 10px; margin-bottom: 12px; font-size: 11px; color: #f87171; line-height: 1.4;">
+            ⚠️ <strong>Bezpečnostné upozornenie:</strong> API kľúče zadané v klientskom HTML sa ukladajú iba vo vašom lokálnom prehliadači. Pre bezpečné produkčné nasadenie použite backend proxy.
+          </div>
+
+          <!-- GROQ -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <div class="form-label">
+              <span>Groq API Key</span>
+              <span id="groq-status-badge" class="status-badge unconfigured">Nenastavené</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="password" id="groq-api-key" class="input-field" placeholder="gsk_..." />
+              <button class="mini-btn" onclick="togglePasswordVisibility('groq-api-key')">👁️</button>
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <button class="mini-btn" onclick="testGroqConnection()">Otestovať & Načítať Modely</button>
+              <button class="mini-btn btn-danger" onclick="clearApiKey('groq')">Zmazať</button>
+            </div>
+          </div>
+
+          <!-- GEMINI -->
+          <div class="form-group">
+            <div class="form-label">
+              <span>Google Gemini API Key</span>
+              <span id="gemini-status-badge" class="status-badge unconfigured">Nenastavené</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="password" id="gemini-api-key" class="input-field" placeholder="AIzaSy..." />
+              <button class="mini-btn" onclick="togglePasswordVisibility('gemini-api-key')">👁️</button>
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <button class="mini-btn" onclick="testGeminiConnection()">Otestovať & Načítať Modely</button>
+              <button class="mini-btn btn-danger" onclick="clearApiKey('gemini')">Zmazať</button>
+            </div>
+          </div>
+
+          <!-- Active Provider Selector -->
+          <div class="form-group" style="margin-top: 14px;">
+            <label class="form-label">Predvolený AI Model</label>
+            <select id="global-model-select" class="input-field" onchange="saveGlobalModel(this.value)">
+              <option value="auto">Auto Provider (Groq / Gemini podľa dostupnosti)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Text to Speech -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Hlas & Reč (Text-to-Speech)
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label class="form-label">Systémový Hlas</label>
+            <select id="tts-voice-select" class="input-field" onchange="saveTtsVoice(this.value)"></select>
+          </div>
+          <div class="form-group">
+            <div class="form-label"><span>Rýchlosť reči</span><span id="tts-rate-val">1.0x</span></div>
+            <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="input-field" oninput="updateTtsRate(this.value)" />
+          </div>
+        </div>
+
+        <!-- Appearance & UI -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Vzhľad a Chat UI
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-title">Tmavý režim</div>
+              <div class="settings-row-desc">Prepnúť tmavý/svetlý štýl</div>
+            </div>
+            <input type="checkbox" id="theme-toggle" checked onchange="toggleTheme(this.checked)" />
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-title">Streaming odpovedí</div>
+              <div class="settings-row-desc">Generovanie slov v reálnom čase</div>
+            </div>
+            <input type="checkbox" id="streaming-toggle" checked onchange="toggleSetting('streaming', this.checked)" />
+          </div>
+        </div>
+
+        <!-- Storage & Reset -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            Dáta a Úložisko
+          </div>
+          <div style="display:flex; flex-direction:column; gap: 8px;">
+            <button class="btn btn-secondary" onclick="exportDataBackup()">Zálohovať dáta (JSON Export)</button>
+            <button class="btn btn-danger" onclick="wipeEntireDatabasePrompt()">Vymazať všetko (Reset do továrenských)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <div class="nav-item active" data-screen="home" onclick="navigate('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Objavuj</span>
+      </div>
+      <div class="nav-item" data-screen="chats" onclick="navigate('chats')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Chaty</span>
+      </div>
+      <div class="nav-item" data-screen="create" onclick="openCreateModal()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Vytvoriť</span>
+      </div>
+      <div class="nav-item" data-screen="settings" onclick="navigate('settings')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Nastavenia</span>
+      </div>
     </nav>
 
-    <!-- Sheet menu v chate -->
-    <div class="modal-bg" id="chatMenu" onclick="if(event.target===this)this.classList.remove('show')">
-      <div class="sheet">
-        <h3>⚙️ Možnosti chatu</h3>
-        <button class="btn ghost" style="margin-bottom:8px" onclick="document.getElementById('chatWallFile').click()">🖼️ Tapeta pre tento chat</button>
-        <button class="btn ghost" style="margin-bottom:8px" onclick="editCharacter()">✏️ Upraviť / Trénovať AI</button>
-        <button class="btn ghost" style="margin-bottom:8px" onclick="clearChat()">🧹 Vymazať históriu chatu</button>
-        <button class="btn ghost" onclick="document.getElementById('chatMenu').classList.remove('show')">Zavrieť</button>
-        <input type="file" id="chatWallFile" accept="image/*" hidden onchange="pickWall(this)">
+    <!-- MODAL: CREATE / EDIT CHARACTER -->
+    <div class="modal-overlay" id="character-editor-modal">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3 id="editor-modal-title">Vytvoriť AI Postavu</h3>
+          <button class="icon-btn" onclick="closeModal('character-editor-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="char-edit-id" />
+          
+          <div class="form-group">
+            <label class="form-label">Meno Postavy *</label>
+            <input type="text" id="char-name-input" class="input-field" placeholder="napr. Aria Vance" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Používateľské meno (Handle) *</label>
+            <input type="text" id="char-username-input" class="input-field" placeholder="aria_vance" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Profilová Fotka (Avatar URL alebo Nahraj)</label>
+            <input type="text" id="char-avatar-url" class="input-field" placeholder="https://... alebo vyber súbor nižšie" />
+            <input type="file" id="char-avatar-file" accept="image/*" class="input-field" style="padding:8px;" onchange="handleImageUploadToInput(this, 'char-avatar-url')" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Krátky Popis (Tagline)</label>
+            <input type="text" id="char-tagline-input" class="input-field" placeholder="Kybernetická hackerka z 2088..." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pozdravná Správa (Úvod chatu)</label>
+            <textarea id="char-greeting-input" class="input-field" rows="2" placeholder="Ahoj. Potrebuješ niečo dešifrovať, alebo sa len tak pozeráš?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Osobnosť & Tón reči (Personality)</label>
+            <textarea id="char-personality-input" class="input-field" rows="3" placeholder="Sarkastická, inteligentná, priama, používa hackerský slang..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pozadie postavy (Backstory & Facts)</label>
+            <textarea id="char-backstory-input" class="input-field" rows="3" placeholder="Vyrastala v podzemnom sektore Neo-Bratislavy..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Systémové Inštrukcie (System Prompt)</label>
+            <textarea id="char-system-input" class="input-field" rows="3" placeholder="Vždy zostaň v postave. Nikdy nespomínaj, že si jazykový model..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Priradený Model</label>
+            <select id="char-model-select" class="input-field">
+              <option value="inherit">Podľa globálneho nastavenia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label"><span>Kreativita (Temperature)</span><span id="char-temp-val">0.7</span></div>
+            <input type="range" min="0.1" max="1.5" step="0.05" value="0.7" class="input-field" oninput="document.getElementById('char-temp-val').innerText = this.value" id="char-temp-input" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('character-editor-modal')">Zrušiť</button>
+          <button class="btn btn-primary" onclick="saveCharacterFromEditor()">Uložiť Postavu</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="toast" id="toast"></div>
-</div>
+    <!-- MODAL: TRAIN CHARACTER & CONTEXT MEMORY -->
+    <div class="modal-overlay" id="train-modal">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>Trénovanie & Pamäť Postavy</h3>
+          <button class="icon-btn" onclick="closeModal('train-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.4; background: var(--bg-tertiary); padding: 10px; border-radius: 8px;">
+            ℹ️ <strong>Character Prompt Context:</strong> Tieto fakty a spomienky sa automaticky vkladajú do kontextu AI pri každej konverzácii. Nejde o re-trénovanie váh modelu.
+          </div>
 
-<script>
-/* ================= DATABÁZA (localStorage) ================= */
-const DB={
-  get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
-  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
-  del:k=>localStorage.removeItem(k)
-};
-let S={user:null,chars:[],settings:{},wallpaper:null,activeChar:null,attachments:[],editId:null};
-let abortStream=false;
+          <div class="form-group">
+            <label class="form-label">Pridať novú vedomosť / spomienku</label>
+            <textarea id="new-memory-input" class="input-field" rows="2" placeholder="napr. Používateľ má rád kyberpunkové hry a študuje programovanie."></textarea>
+            <button class="btn btn-secondary" style="margin-top: 6px;" onclick="addMemoryToActiveCharacter()">+ Pridať do pamäte</button>
+          </div>
 
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const $=id=>document.getElementById(id);
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function md(s){s=esc(s);return s
-  .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>')
-  .replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>')}
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
-function resize64(dataUrl,max=640){return new Promise(r=>{const i=new Image();i.onload=()=>{
-  const sc=Math.min(1,max/Math.max(i.width,i.height));const c=document.createElement('canvas');
-  c.width=i.width*sc;c.height=i.height*sc;c.getContext('2d').drawImage(i,0,0,c.width,c.height);
-  r(c.toDataURL('image/jpeg',.82))};i.src=dataUrl})}
-const fileToData=f=>new Promise(r=>{const rd=new FileReader();rd.onload=()=>r(rd.result);rd.readAsDataURL(f)});
+          <div class="settings-section-title" style="margin-top: 10px;">Uložené spomienky postavy</div>
+          <div id="character-memories-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Rendered memories -->
+          </div>
+        </div>
+      </div>
+    </div>
 
-/* ================= AUTENTIFIKÁCIA ================= */
-async function hashPw(pw){
-  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('nexus$'+pw));
-    return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-  catch(e){let h=0;for(const c of pw)h=(h*31+c.charCodeAt(0))|0;return 'f'+h}
-}
-function authTab(t){
-  $('tabLogin').classList.toggle('on',t==='login');$('tabReg').classList.toggle('on',t==='reg');
-  $('pass2Wrap').classList.toggle('hidden',t==='login');
-  $('authBtn').textContent=t==='login'?'Prihlásiť sa →':'Vytvoriť účet ✨';
-  $('authBtn').dataset.mode=t;$('authErr').textContent='';
-}
-async function doAuth(){
-  const u=$('authUser').value.trim(),p=$('authPass').value,mode=$('authBtn').dataset.mode;
-  const err=$('authErr');
-  if(u.length<3)return err.textContent='Meno musí mať aspoň 3 znaky.';
-  if(p.length<4)return err.textContent='Heslo musí mať aspoň 4 znaky.';
-  const users=DB.get('nx_users',{});
-  if(mode==='reg'){
-    if(p!==$('authPass2').value)return err.textContent='Heslá sa nezhodujú.';
-    if(users[u])return err.textContent='Toto meno už existuje.';
-    users[u]={pw:await hashPw(p),created:Date.now()};DB.set('nx_users',users);
-    seedCharacters(u); toast('Účet vytvorený! 🎉'); login(u);
-  }else{
-    if(!users[u])return err.textContent='Účet neexistuje. Registruj sa.';
-    if(users[u].pw!==await hashPw(p))return err.textContent='Nesprávne heslo.';
-    login(u);
-  }
-}
-function login(u){
-  DB.set('nx_session',u);
-  S.user=u;S.settings=Object.assign({apiKey:'',model:'llama-3.3-70b-versatile',web:true,autoTTS:false},DB.get('nx_set_'+u,{}));
-  S.wallpaper=DB.get('nx_wall_'+u,null);
-  S.chars=DB.get('nx_chars_'+u,[]);
-  $('authScreen').classList.remove('active');$('app').classList.remove('hidden');
-  $('userLabel').textContent=u;$('userAva').textContent=u[0].toUpperCase();
-  $('apiKeyInput').value=S.settings.apiKey;$('modelSel').value=S.settings.model;
-  $('webToggle').checked=S.settings.web;$('ttsToggle').checked=S.settings.autoTTS;
-  renderWall();renderHome();go('home');
-}
-function logout(){speechSynthesis&&speechSynthesis.cancel();DB.del('nx_session');location.reload()}
-function seedCharacters(u){
-  const def=[
-    {name:'Aria',tag:'Tvoja múdra AI kamarátka • priateľská a empatická',emoji:'💜',
-     greet:'Ahoj! Ja som Aria ✨ Som tu pre teba – môžeš so mnou rozprávať o čomkoľvek. Ako sa dnes máš?',
-     pers:'Si priateľská, empatická a múdra AI kamarátka. Odpovedá s teplom a podporou, kladie otázky, zaujíma sa o citižiadostivé pocity používateľa. Píše stručne a prirodzene.'},
-    {name:'Rex',tag:'Odborník na programovanie • code master',emoji:'👨‍💻',
-     greet:'Zdravím! Som Rex 👨‍💻 Riešim bugy, vysvetlím kód v akomkoľvek jazyku. S čím ti pomôžem?',
-     pers:'Si expert na programovanie. Odpovedá odborne, stručne, s príkladmi kódu v `backtickoch`. Rieši problémy krok za krokom.'},
-    {name:'Luna',tag:'Rozprávačka príbehov • fantasy a dobrodružstvo',emoji:'🌙',
-     greet:'Vitaj, pútnik... 🌙 Som Luna. Spolu môžeme prežiť príbehy, ktoré si len predstavíš. Kde sa dnes vydáme?',
-     pers:'Si kreatívna rozprávačka príbehov. Vedie interaktívne príbehy, popisuje svety živo, dáva používateľovi na výber. Píše evokujúco a napínavo.'},
-    {name:'Coach',tag:'Tvoj osobný tréner • motivácia a Fitness',emoji:'💪',
-     greet:'Poďme na to! 💪 Som Coach. Plán, motivácia, cviky – všetko mám. Aký je dnes cieľ?',
-     pers:'Si energetický osobný tréner a motivátor. Povzbudzuje, radí cviky, stravu a budovanie návykov. Krátke, výstrelne motivujúce odpovede.'}
-  ];
-  DB.set('nx_chars_'+u,def.map(c=>({...c,id:uid(),avatar:null,voice:'sk-SK',train:[],created:Date.now()})));
-}
+    <!-- MODAL: WALLPAPER CUSTOMIZATION -->
+    <div class="modal-overlay" id="wallpaper-modal">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>Tapeta a Pozadie Chatu</h3>
+          <button class="icon-btn" onclick="closeModal('wallpaper-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nahrať obrázok pozadia</label>
+            <input type="file" accept="image/*" class="input-field" onchange="handleWallpaperUpload(this)" />
+          </div>
+          <div class="form-group">
+            <div class="form-label"><span>Stmavenie (Dark Overlay)</span><span id="wp-overlay-val">70%</span></div>
+            <input type="range" min="0" max="100" value="70" class="input-field" oninput="updateWallpaperOverlay(this.value)" />
+          </div>
+          <div class="form-group">
+            <div class="form-label"><span>Rozostrenie (Blur)</span><span id="wp-blur-val">0px</span></div>
+            <input type="range" min="0" max="20" value="0" class="input-field" oninput="updateWallpaperBlur(this.value)" />
+          </div>
+          <button class="btn btn-danger" onclick="removeActiveWallpaper()">Odstrániť tapetu</button>
+        </div>
+      </div>
+    </div>
 
-/* ================= NAVIGÁCIA ================= */
-function go(s){
-  document.querySelectorAll('#app .screen').forEach(x=>x.classList.remove('active'));
-  $('homeScreen').classList.toggle('active',s==='home');
-  $('createScreen').classList.toggle('active',s==='create');
-  $('settingsScreen').classList.toggle('active',s==='settings');
-  $('chatScreen').classList.toggle('active',s==='chat');
-  $('bottomNav').style.display=s==='chat'?'none':'flex';
-  $('navHome').classList.toggle('on',s==='home');
-  $('navSet').classList.toggle('on',s==='settings');
-  if(s==='home')renderHome();
-}
+    <!-- MODAL: ATTACHMENT PICKER -->
+    <div class="modal-overlay" id="attachment-modal">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3>Priložiť multimédiá</h3>
+          <button class="icon-btn" onclick="closeModal('attachment-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="file" id="media-file-input" accept="image/*,video/*" class="hidden" onchange="handleFileSelected(event)" />
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <button class="btn btn-secondary" style="height: 70px; flex-direction: column;" onclick="triggerFileInput('image/*')">
+              📷 <span>Fotka / Obrázok</span>
+            </button>
+            <button class="btn btn-secondary" style="height: 70px; flex-direction: column;" onclick="triggerFileInput('video/*')">
+              🎥 <span>Video (MP4/WebM)</span>
+            </button>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
+            Multimodálny vstup je podporovaný na modeloch Gemini a Groq Vision. Ak model nepodporuje video, AI vás o tom čestne informuje.
+          </div>
+        </div>
+      </div>
+    </div>
 
-/* ================= DOMOV ================= */
-function renderHome(){
-  const q=($('searchInput').value||'').toLowerCase();
-  const list=S.chars.filter(c=>!q||c.name.toLowerCase().includes(q)||(c.tag||'').toLowerCase().includes(q));
-  $('storiesRow').innerHTML=list.slice(0,8).map(c=>`
-    <div class="story" onclick="openChat('${c.id}')">
-      <div class="ava"><div class="in">${c.avatar?`<img src="${c.avatar}">`:c.emoji||'🤖'}</div></div>
-      <p>${esc(c.name)}</p></div>`).join('');
-  $('charCount').textContent=list.length+' postáv';
-  $('charList').innerHTML=list.map(c=>{
-    const hist=DB.get('nx_chat_'+S.user+'_'+c.id,[]);
-    return`<div class="charcard" onclick="openChat('${c.id}')">
-      <div class="ava">${c.avatar?`<img src="${c.avatar}">`:c.emoji||'🤖'}</div>
-      <div style="flex:1;min-width:0"><h4>${esc(c.name)}</h4><small>${esc(c.tag||c.pers||'AI postava')}</small>
-      <span class="chip">💬 ${hist.length} správ${c.train&&c.train.length?' • 🎓 vytrénovaná':''}</span></div></div>`}).join('')
-    ||'<p style="color:var(--mut);text-align:center;padding:30px 0">Žiadne postavy. Vytvor si prvú! ＋</p>';
-}
+  </div> <!-- End App Container -->
 
-/* ================= VYTVÁRANIE POSTÁV ================= */
-let tmpAvatar=null,tmpTrain=[];
-function openCreate(id){
-  S.editId=id||null;
-  $('createTitle').textContent=id?'Upraviť AI':'Vytvoriť AI postavu';
-  $('deleteCharBtn').classList.toggle('hidden',!id);
-  const c=id?S.chars.find(x=>x.id===id):null;
-  tmpAvatar=c?c.avatar:null;tmpTrain=c?JSON.parse(JSON.stringify(c.train||[])):[];
-  $('cName').value=c?c.name:'';$('cTag').value=c?(c.tag||''):'';
-  $('cGreet').value=c?(c.greet||''):'';$('cPers').value=c?(c.pers||''):'';
-  $('cVoice').value=c?(c.voice||'sk-SK'):'sk-SK';
-  drawAvatar();renderTrain();
-  go('create');
-}
-function drawAvatar(){
-  const el=$('avatarPrev');
-  const name=$('cName').value.trim();
-  el.innerHTML=(tmpAvatar?`<img src="${tmpAvatar}">`:(name?esc(name[0].toUpperCase()):'✨'))+'<div class="plus">+</div>';
-}
-async function pickAvatar(inp){
-  if(inp.files[0]){tmpAvatar=await resize64(await fileToData(inp.files[0]),300);drawAvatar()}
-}
-function addTrainRow(){tmpTrain.push({q:'',a:''});renderTrain()}
-function renderTrain(){
-  $('trainList').innerHTML=tmpTrain.map((t,i)=>`
-    <div class="trainbox">
-      <input placeholder="Používateľ povie..." value="${esc(t.q)}" style="margin-bottom:6px"
-        oninput="tmpTrain[${i}].q=this.value">
-      <input placeholder="AI má odpovedať..." value="${esc(t.a)}" oninput="tmpTrain[${i}].a=this.value">
-      <button onclick="tmpTrain.splice(${i},1);renderTrain()" style="background:none;border:0;color:#f87171;cursor:pointer;font-size:12px;margin-top:6px">✖ Zmazať príklad</button>
-    </div>`).join('');
-}
-async function saveCharacter(){
-  const name=$('cName').value.trim();
-  if(!name)return toast('⚠️ Zadaj meno postavy');
-  const data={name,tag:$('cTag').value.trim(),greet:$('cGreet').value.trim()||`Ahoj! Ja som ${name}. 😊`,
-    pers:$('cPers').value.trim(),voice:$('cVoice').value,train:tmpTrain.filter(t=>t.q&&t.a),avatar:tmpAvatar};
-  if(S.editId){const i=S.chars.findIndex(c=>c.id===S.editId);S.chars[i]={...S.chars[i],...data}}
-  else S.chars.push({id:uid(),emoji:'🤖',created:Date.now(),...data});
-  DB.set('nx_chars_'+S.user,S.chars);
-  toast(S.editId?'✅ AI upravená':'✅ AI postava vytvorená!');
-  go('home');
-}
-function deleteCharacter(){
-  if(!confirm('Naozaj zmazať túto AI postavu aj s chatom?'))return;
-  S.chars=S.chars.filter(c=>c.id!==S.editId);
-  DB.set('nx_chars_'+S.user,S.chars);DB.del('nx_chat_'+S.user+'_'+S.editId);
-  toast('🗑️ Zmazané');go('home');
-}
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       1. DATABASE & STORAGE LAYER (IndexedDB)
+       ========================================================================== */
+    const DB_NAME = 'AetheriaAIDB';
+    const DB_VERSION = 1;
+    let db = null;
 
-/* ================= CHAT ================= */
-function openChat(id){
-  S.activeChar=S.chars.find(c=>c.id===id);if(!S.activeChar)return;
-  $('chatName').textContent=S.activeChar.name;
-  $('chatAva').innerHTML=S.activeChar.avatar?`<img src="${S.activeChar.avatar}" style="width:100%;height:100%;object-fit:cover">`:S.activeChar.emoji||'🤖';
-  // Tapeta chatu
-  const cw=DB.get('nx_wall_chat_'+S.user+'_'+id,null);
-  $('chatBg').style.backgroundImage=cw?`url(${cw})`:(S.wallpaper?`url(${S.wallpaper})`:'none');
-  renderMsgs();go('chat');
-}
-function endChat(){go('home')}
-function renderMsgs(){
-  const hist=DB.get('nx_chat_'+S.user+'_'+S.activeChar.id,[]);
-  const box=$('msgs');
-  box.innerHTML=hist.map(m=>{
-    const ava=S.activeChar.avatar?`<img src="${S.activeChar.avatar}">`:S.activeChar.emoji||'🤖';
-    let imgs=(m.images||[]).map(u=>`<img class="att" src="${u}">`).join('');
-    if(m.role==='user')return`<div class="msg me"><div class="bubble">${imgs}${md(m.text)}</div></div>`;
-    return`<div class="msg"><div class="mava">${ava}</div><div>
-      <div class="bubble">${imgs}${md(m.text)}${m.web?'<div class="webnote">🌐 Použila som čerstvé informácie z internetu</div>':''}</div>
-      <div class="mactions"><button onclick="speakMsg(this,${hist.indexOf(m)})" title="Prečítať">🔊</button>
-      <button onclick="copyMsg(${hist.indexOf(m)})" title="Kopírovať">📋</button>
-      ${hist.indexOf(m)===hist.length-1?`<button onclick="regenerate()" title="Vygenerovať znova">🔄</button>`:''}</div></div></div>`;
-  }).join('');
-  if(!hist.length){
-    box.innerHTML=`<div class="msg"><div class="mava">${S.activeChar.avatar?`<img src="${S.activeChar.avatar}">`:S.activeChar.emoji||'🤖'}</div>
-      <div class="bubble">${md(S.activeChar.greet||'Ahoj! 😊')}</div></div>`;
-    DB.set('nx_chat_'+S.user+'_'+S.activeChar.id,[{role:'assistant',text:S.activeChar.greet||'Ahoj! 😊'}]);
-  }
-  box.scrollTop=box.scrollHeight;
-}
-function copyMsg(i){const h=DB.get('nx_chat_'+S.user+'_'+S.activeChar.id,[]);navigator.clipboard.writeText(h[i].text);toast('📋 Skopírované')}
-function clearChat(){DB.del('nx_chat_'+S.user+'_'+S.activeChar.id);$('chatMenu').classList.remove('show');renderMsgs();toast('🧹 História vymazaná')}
-function clearAllChats(){S.chars.forEach(c=>DB.del('nx_chat_'+S.user+'_'+c.id));toast('🧹 Všetky chaty vymazané')}
-function openChatMenu(){$('chatMenu').classList.add('show')}
-function editCharacter(){$('chatMenu').classList.remove('show');openCreate(S.activeChar.id)}
-
-/* --- Prílohy (obrázky & videá) --- */
-async function pickAttachment(inp){
-  for(const f of inp.files){
-    if(f.type.startsWith('image/')){
-      S.attachments.push(await resize64(await fileToData(f)));
-    }else if(f.type.startsWith('video/')){
-      toast('🎬 Extrakujem snímky z videa...');
-      const frames=await grabVideoFrames(f);
-      S.attachments.push(...frames);
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('users')) {
+            database.createObjectStore('users', { keyPath: 'username' });
+          }
+          if (!database.objectStoreNames.contains('characters')) {
+            database.createObjectStore('characters', { keyPath: 'id' });
+          }
+          if (!database.objectStoreNames.contains('chats')) {
+            database.createObjectStore('chats', { keyPath: 'id' });
+          }
+          if (!database.objectStoreNames.contains('messages')) {
+            const msgStore = database.createObjectStore('messages', { keyPath: 'id', autoIncrement: true });
+            msgStore.createIndex('chatId', 'chatId', { unique: false });
+          }
+          if (!database.objectStoreNames.contains('memories')) {
+            const memStore = database.createObjectStore('memories', { keyPath: 'id', autoIncrement: true });
+            memStore.createIndex('characterId', 'characterId', { unique: false });
+          }
+          if (!database.objectStoreNames.contains('settings')) {
+            database.createObjectStore('settings', { keyPath: 'key' });
+          }
+        };
+        request.onsuccess = (e) => {
+          db = e.target.result;
+          resolve(db);
+        };
+        request.onerror = (e) => reject(e.target.error);
+      });
     }
-  }
-  inp.value='';renderAttach();
-}
-function renderAttach(){
-  $('attachPrev').innerHTML=S.attachments.map((u,i)=>`
-    <div class="thumb"><img src="${u}"><div class="x" onclick="S.attachments.splice(${i},1);renderAttach()">✕</div></div>`).join('');
-}
-function grabVideoFrames(file,count=2){
-  return new Promise(res=>{
-    const v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(file);
-    const frames=[];const seek=t=>new Promise(r=>{v.onseeked=r;v.currentTime=t});
-    v.onerror=()=>res([]);
-    v.addEventListener('loadedmetadata',async()=>{
-      try{
-        const dur=v.duration||1;
-        for(let i=0;i<count;i++){
-          await seek(Math.min(dur*(i+1)/(count+1),Math.max(0,dur-.1)));
-          const c=document.createElement('canvas');
-          const sc=Math.min(1,640/Math.max(v.videoWidth||640,v.videoHeight||360));
-          c.width=(v.videoWidth||640)*sc;c.height=(v.videoHeight||360)*sc;
-          c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-          frames.push(c.toDataURL('image/jpeg',.8));
+
+    async function dbGet(storeName, key) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const req = tx.objectStore(storeName).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbGetAll(storeName) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbPut(storeName, value) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        const req = tx.objectStore(storeName).put(value);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbDelete(storeName, key) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        const req = tx.objectStore(storeName).delete(key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbGetByIndex(storeName, indexName, value) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const index = tx.objectStore(storeName).index(indexName);
+        const req = index.getAll(value);
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    /* ==========================================================================
+       2. APPLICATION STATE
+       ========================================================================== */
+    const state = {
+      currentUser: null,
+      activeScreen: 'splash',
+      activeCharacter: null,
+      activeChatId: null,
+      isGenerating: false,
+      abortController: null,
+      groqKey: '',
+      geminiKey: '',
+      groqModels: [],
+      geminiModels: [],
+      selectedModel: 'auto',
+      ttsVoice: null,
+      ttsRate: 1.0,
+      streamingEnabled: true,
+      pendingAttachment: null, // { type: 'image'|'video', dataUrl, name, size }
+      charactersFilter: 'all',
+      searchQuery: ''
+    };
+
+    const DEFAULT_CHARACTERS = [
+      {
+        id: 'char_aria',
+        name: 'Aria Vance',
+        username: 'aria_vance',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        tagline: 'Kybernetická špecialistka a AI analytička',
+        greeting: 'Systémy sú online. Hľadáte niečo konkrétne v sieti, alebo potrebujete dešifrovať dáta?',
+        personality: 'Bystrá, pragmatická, mierne tajomná s jemným suchým humorom.',
+        backstory: 'Bývalá bezpečnostná konzultantka v Neo-Bratislave v roku 2088.',
+        systemInstructions: 'Správaj sa ako Aria Vance. Odpovedaj v slovenskom jazyku, udržuj futuristický tón a buď priateľská, no profesionálna.',
+        temperature: 0.7,
+        favorite: true,
+        creator: 'system'
+      },
+      {
+        id: 'char_marcus',
+        name: 'Profesor Marcus',
+        username: 'marcus_wise',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+        tagline: 'Filozof, historik a trpezlivý mentor',
+        greeting: 'Zdravím ťa, priateľu. O čom dnes budeme premýšľať? O tajomstvách vesmíru či ľudskej mysle?',
+        personality: 'Pokojný, hĺbavý, empatický, cituje starých mysliteľov a kladie podnetné otázky.',
+        backstory: 'Celý život zasvätil štúdiu antickej múdrosti a etiky vedy.',
+        systemInstructions: 'Hovor ako múdry a láskavý filozof. Ponúkaj rôzne pohľady na životné otázky a inšpiruj k zamysleniu.',
+        temperature: 0.6,
+        favorite: false,
+        creator: 'system'
+      }
+    ];
+
+    /* ==========================================================================
+       3. INITIALIZATION & AUTHENTICATION
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', async () => {
+      await openDatabase();
+      await loadInitialSettings();
+      await seedDefaultCharacters();
+      initSpeechSynthesis();
+
+      // Check existing session
+      const savedUser = localStorage.getItem('aetheria_session_user');
+      if (savedUser) {
+        state.currentUser = savedUser;
+        updateUserUI();
+        navigate('home');
+        showToast(`Vitaj späť, ${savedUser}!`);
+      }
+    });
+
+    async function loadInitialSettings() {
+      state.groqKey = (await dbGet('settings', 'groqKey'))?.value || '';
+      state.geminiKey = (await dbGet('settings', 'geminiKey'))?.value || '';
+      state.selectedModel = (await dbGet('settings', 'selectedModel'))?.value || 'auto';
+      state.ttsRate = (await dbGet('settings', 'ttsRate'))?.value || 1.0;
+
+      document.getElementById('groq-api-key').value = state.groqKey;
+      document.getElementById('gemini-api-key').value = state.geminiKey;
+
+      if (state.groqKey) testGroqConnection(false);
+      if (state.geminiKey) testGeminiConnection(false);
+    }
+
+    async function seedDefaultCharacters() {
+      const existing = await dbGetAll('characters');
+      if (existing.length === 0) {
+        for (const char of DEFAULT_CHARACTERS) {
+          await dbPut('characters', char);
         }
-      }catch(e){}
-      res(frames);
-    });
-  });
-}
-function growInput(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px'}
-
-/* --- Hlasový vstup --- */
-function voiceInput(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR)return toast('⚠️ Tvoj prehliadač nepodporuje hlasový vstup');
-  const r=new SR();r.lang='sk-SK';r.interimResults=false;
-  $('micBtn').style.borderColor='var(--acc)';$('micBtn').textContent='⏺️';
-  r.onresult=e=>{$('msgInput').value=e.results[0][0].transcript;growInput($('msgInput'))};
-  r.onend=()=>{$('micBtn').style.borderColor='var(--line)';$('micBtn').textContent='🎤'};
-  r.onerror=r.onend; r.start();
-}
-
-/* --- Internetové vyhľadávanie --- */
-async function webSearch(q){
-  const out=[];
-  try{
-    const r=await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&no_html=1&skip_disambig=1`);
-    const j=await r.json();
-    if(j.AbstractText)out.push('📌 '+j.AbstractText);
-    if(j.RelatedTopics)j.RelatedTopics.slice(0,3).forEach(t=>{if(t.Text)out.push('• '+t.Text)});
-  }catch(e){}
-  try{
-    const r=await fetch(`https://sk.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*&srlimit=3`);
-    const j=await r.json();
-    (j.query?.search||[]).forEach(s=>out.push('📖 '+s.title+': '+s.snippet.replace(/<[^>]+>/g,'')));
-  }catch(e){}
-  return out.slice(0,6).join('\n');
-}
-
-/* --- Groq API --- */
-async function callGroq(messages,model,onDelta){
-  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.settings.apiKey},
-    body:JSON.stringify({model,messages,stream:true,temperature:.8,max_tokens:1200})
-  });
-  if(!res.ok){let e='Chyba API ('+res.status+')';try{const j=await res.json();e=j.error?.message||e}catch(x){}throw new Error(e)}
-  const reader=res.body.getReader(),dec=new TextDecoder();let buf='',full='';
-  while(true){
-    const{done,value}=await reader.read();if(done||abortStream)break;
-    buf+=dec.decode(value,{stream:true});
-    const lines=buf.split('\n');buf=lines.pop();
-    for(const line of lines){
-      const t=line.trim();if(!t.startsWith('data:'))continue;
-      const d=t.slice(5).trim();if(d==='[DONE]')continue;
-      try{const j=JSON.parse(d);const c=j.choices?.[0]?.delta?.content;
-        if(c){full+=c;onDelta(full)}}catch(e){}
+      }
     }
-  }
-  return full;
-}
 
-function buildSystem(char){
-  let sys=`Si AI postava menom "${char.name}". ${char.tag?'Krátky popis: '+char.tag+'.':''}
-${char.pers?'Tvoja osobnosť a pravidlá správania: '+char.pers:''}
-Úvodná správa, ktorou si privítal používateľa: "${char.greet}"
-Pravidlá: Vždy zostávaj v úlohe tejto postavy. Odpovedaj v jazyku používateľa (väčšinou slovensky). Odpovede píš prirodzene, živo a stručne (max ~150 slov), ako v mobile chate. Používaj emotikony primerane. Nikdy neprezraďuj, že si jazykový model – si ${char.name}.`;
-  if(char.train&&char.train.length){
-    sys+='\n\n🎓 TRÉNINGOVÉ PRÍKLADY (uč sa z nich štýl odpovedí):\n'+char.train.map(t=>`Používateľ: ${t.q}\n${char.name}: ${t.a}`).join('\n');
-  }
-  return sys;
-}
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      submitBtn.innerText = tab === 'login' ? 'Prihlásiť sa' : 'Vytvoriť účet';
+      submitBtn.dataset.mode = tab;
+    }
 
-async function sendMessage(){
-  const inp=$('msgInput'),text=inp.value.trim();
-  if(!text&&!S.attachments.length)return;
-  if(!S.settings.apiKey){toast('⚠️ Najprv zadaj Groq API kľúč v Nastaveniach!');go('settings');return}
-  const char=S.activeChar,key='nx_chat_'+S.user+'_'+char.id;
-  const hist=DB.get(key,[]);
-  const images=[...S.attachments];S.attachments=[];renderAttach();
-  hist.push({role:'user',text:text||'(poslal som prílohu)',images});
-  inp.value='';growInput(inp);
-  // Zobraz správu používateľa
-  const box=$('msgs');
-  box.insertAdjacentHTML('beforeend',`<div class="msg me"><div class="bubble">${images.map(u=>`<img class="att" src="${u}">`).join('')}${md(text||'📎')}</div></div>`);
-  box.scrollTop=box.scrollHeight;
-  await askAI(char,key,hist,text,box);
-}
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('auth-username').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
+      const mode = document.getElementById('auth-submit-btn').dataset.mode || 'login';
 
-async function regenerate(){
-  const char=S.activeChar,key='nx_chat_'+S.user+'_'+char.id;
-  const hist=DB.get(key,[]);
-  while(hist.length&&hist[hist.length-1].role==='assistant')hist.pop();
-  DB.set(key,hist);renderMsgs();
-  const lastUser=[...hist].reverse().find(m=>m.role==='user');
-  await askAI(char,key,hist,lastUser?lastUser.text:'',$('msgs'));
-}
+      if (!username || password.length < 4) {
+        showToast('Zadajte platné meno a heslo (min 4 znaky)');
+        return;
+      }
 
-async function askAI(char,key,hist,userText,box){
-  abortStream=false;$('sendBtn').disabled=true;
-  // ==== THINKING INDIKÁTOR V REÁLNOM ČASE ====
-  const think=document.createElement('div');
-  think.innerHTML=`<div class="think"><div class="tdots"><i></i><i></i><i></i></div>
-    <div class="ttext"><span class="shimmer">Premýšľa v reálnom čase</span><span class="ttime" id="tTime">0.0s</span></div></div>`;
-  box.appendChild(think);box.scrollTop=box.scrollHeight;
-  const t0=Date.now();
-  const timer=setInterval(()=>{const el=think.querySelector('#tTime');if(el)el.textContent=((Date.now()-t0)/1000).toFixed(1)+'s'},100);
-  const phase=think.querySelector('.shimmer');
-  // ==== INTERNET ====
-  let webCtx='',usedWeb=false;
-  if(S.settings.web&&userText){
-    phase.textContent='🌐 Prehľadáva internet...';
-    try{const r=await webSearch(userText);if(r){webCtx='\n\n🌐 ČERSTVÉ INFORMÁCIE Z INTERNETU (môžeš ich použiť):\n'+r;usedWeb=true}}catch(e){}
-  }
-  phase.textContent=usedWeb?'🧠 Analyzuje nájdené informácie...':'🧠 Analyzuje konverzáciu...';
-  // ==== SPRÁVY PRE GROQ ====
-  const msgs=[{role:'system',content:buildSystem(char)+webCtx}];
-  const hasImg=hist.some(m=>m.images&&m.images.length);
-  hist.slice(-14).forEach(m=>{
-    if(m.role==='user'){
-      if(m.images&&m.images.length){
-        const content=[{type:'text',text:m.text||'Pozri sa na tento obsah.'},
-          ...m.images.slice(0,3).map(u=>({type:'image_url',image_url:{url:u}}))];
-        msgs.push({role:'user',content});
-      }else msgs.push({role:'user',content:m.text});
-    }else msgs.push({role:'assistant',content:m.text});
-  });
-  const model=(hasImg)?'meta-llama/llama-4-scout-17b-16e-instruct':S.settings.model;
-  // ==== STREAMING odpoveď ====
-  const mEl=document.createElement('div');
-  mEl.innerHTML=`<div class="msg"><div class="mava">${char.avatar?`<img src="${char.avatar}">`:char.emoji||'🤖'}</div>
-    <div><div class="bubble"><span class="streamTxt"></span></div></div></div>`;
-  let full='';
-  try{
-    phase.textContent='✍️ Formuluje odpoveď...';
-    box.appendChild(mEl);
-    const st=mEl.querySelector('.streamTxt');
-    full=await callGroq(msgs,model,t=>{
-      st.innerHTML=md(t)+' <span style="color:var(--acc)">▌</span>';
-      box.scrollTop=box.scrollHeight;
-    });
-    if(!full.trim())full='(neprišla žiadna odpoveď – skús znova)';
-  }catch(e){
-    full='⚠️ '+e.message+'\n\nSkontroluj API kľúč v nastaveniach (console.groq.com/keys).';
-    if(!mEl.isConnected)box.appendChild(mEl);
-  }
-  clearInterval(timer);think.remove();mEl.remove();abortStream=false;$('sendBtn').disabled=false;
-  hist.push({role:'assistant',text:full,web:usedWeb});
-  DB.set(key,hist);renderMsgs();
-  if(S.settings.autoTTS)speakText(full);
-}
+      if (mode === 'register') {
+        const existing = await dbGet('users', username);
+        if (existing) {
+          showToast('Používateľ s týmto menom už existuje!');
+          return;
+        }
+        await dbPut('users', { username, password, createdAt: new Date().toISOString() });
+        showToast('Účet bol úspešne vytvorený!');
+      } else {
+        const user = await dbGet('users', username);
+        if (!user || user.password !== password) {
+          showToast('Nesprávne meno alebo heslo!');
+          return;
+        }
+      }
 
-/* ================= TEXT-TO-SPEECH ================= */
-let currentAudioBtn=null;
-function loadVoices(){return speechSynthesis.getVoices()}
-if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>loadVoices();
-function speakMsg(btn,i){
-  const h=DB.get('nx_chat_'+S.user+'_'+S.activeChar.id,[]);
-  speakText(h[i].text,btn);
-}
-function speakText(text,btn){
-  speechSynthesis.cancel();
-  if(currentAudioBtn){currentAudioBtn.classList.remove('speaking');currentAudioBtn.textContent='🔊'}
-  if(btn&&currentAudioBtn===btn){currentAudioBtn=null;return}
-  const clean=text.replace(/[*_`#>]/g,'').replace(/https?:\S+/g,'');
-  const u=new SpeechSynthesisUtterance(clean.slice(0,700));
-  u.lang=(S.activeChar&&S.activeChar.voice)||'sk-SK';u.rate=1.02;u.pitch=1.05;
-  const vs=loadVoices();
-  const v=vs.find(x=>x.lang===u.lang)||vs.find(x=>x.lang.startsWith(u.lang.slice(0,2)))||vs.find(x=>x.lang.startsWith('cs'));
-  if(v)u.voice=v;
-  if(btn){currentAudioBtn=btn;btn.classList.add('speaking');btn.textContent='⏹️';
-    u.onend=u.onerror=()=>{btn.classList.remove('speaking');btn.textContent='🔊';if(currentAudioBtn===btn)currentAudioBtn=null}}
-  speechSynthesis.speak(u);
-}
+      state.currentUser = username;
+      localStorage.setItem('aetheria_session_user', username);
+      updateUserUI();
+      navigate('home');
+    }
 
-/* ================= NASTAVENIA ================= */
-function saveSettings(){
-  S.settings.apiKey=$('apiKeyInput').value.trim();
-  S.settings.model=$('modelSel').value;
-  S.settings.web=$('webToggle').checked;
-  S.settings.autoTTS=$('ttsToggle').checked;
-  DB.set('nx_set_'+S.user,S.settings);
-  toast('✅ Nastavenia uložené');
-}
-async function pickWall(inp){
-  const f=inp.files[0];if(!f)return;
-  const data=await resize64(await fileToData(f),900);
-  if(inp.id==='chatWallFile'){
-    DB.set('nx_wall_chat_'+S.user+'_'+S.activeChar.id,data);
-    $('chatBg').style.backgroundImage=`url(${data})`;
-    $('chatMenu').classList.remove('show');toast('🖼️ Tapeta chatu nastavená');
-  }else{
-    S.wallpaper=data;DB.set('nx_wall_'+S.user,data);renderWall();toast('🖼️ Tapeta uložená');
-  }
-  inp.value='';
-}
-function clearWall(){S.wallpaper=null;DB.del('nx_wall_'+S.user);renderWall();toast('Tapeta zmazaná')}
-function renderWall(){$('wallPrev').style.backgroundImage=S.wallpaper?`url(${S.wallpaper})`:'none';$('wallPrev').textContent=S.wallpaper?'':'Žiadna tapeta'}
+    function handleGuestLogin() {
+      state.currentUser = 'Guest_' + Math.floor(Math.random() * 1000);
+      localStorage.setItem('aetheria_session_user', state.currentUser);
+      updateUserUI();
+      navigate('home');
+      showToast('Prihlásený ako Hosť (Lokálny režim)');
+    }
 
-/* ================= AUTO-PRIHLÁSENIE ================= */
-$('cName').addEventListener('input',drawAvatar);
-window.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-bg').forEach(m=>m.classList.remove('show'))}});
-(function(){
-  const s=DB.get('nx_session',null);
-  if(s&&DB.get('nx_users',{})[s])login(s);
-})();
-</script>
+    function logout() {
+      state.currentUser = null;
+      localStorage.removeItem('aetheria_session_user');
+      navigate('splash');
+      showToast('Boli ste odhlásený');
+    }
+
+    function updateUserUI() {
+      document.getElementById('settings-username-display').innerText = state.currentUser || 'Hosť';
+    }
+
+    /* ==========================================================================
+       4. NAVIGATION & ROUTER
+       ========================================================================== */
+    function navigate(screenId) {
+      state.activeScreen = screenId;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const targetScreen = document.getElementById(`${screenId}-screen`);
+      if (targetScreen) targetScreen.classList.add('active');
+
+      // Update bottom nav
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.screen === screenId);
+      });
+
+      // Bottom nav visibility
+      const bottomNav = document.getElementById('bottom-nav');
+      if (screenId === 'splash' || screenId === 'chat') {
+        bottomNav.classList.add('hidden');
+      } else {
+        bottomNav.classList.remove('hidden');
+      }
+
+      if (screenId === 'home') renderCharacters();
+      if (screenId === 'chats') renderChatsList();
+    }
+
+    /* ==========================================================================
+       5. CHARACTERS CONTROLLER
+       ========================================================================== */
+    async function renderCharacters() {
+      const container = document.getElementById('characters-container');
+      const allCharacters = await dbGetAll('characters');
+
+      let filtered = allCharacters.filter(c => {
+        const matchSearch = c.name.toLowerCase().includes(state.searchQuery.toLowerCase()) || 
+                            c.tagline.toLowerCase().includes(state.searchQuery.toLowerCase());
+        if (!matchSearch) return false;
+
+        if (state.charactersFilter === 'mine') return c.creator === state.currentUser;
+        if (state.charactersFilter === 'favorites') return c.favorite === true;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">Žiadne postavy nenájdené.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(char => `
+        <div class="char-card" onclick="openChatWithCharacter('${char.id}')">
+          <img src="${char.avatar || 'https://via.placeholder.com/150'}" class="char-avatar" alt="${char.name}" onerror="this.src='https://via.placeholder.com/150'" />
+          <div class="char-info">
+            <div class="char-name-row">
+              <span class="char-name">${char.name}</span>
+              <button class="icon-btn" style="width:28px; height:28px;" onclick="event.stopPropagation(); toggleFavorite('${char.id}')">
+                ${char.favorite ? '⭐' : '☆'}
+              </button>
+            </div>
+            <div class="char-username">@${char.username}</div>
+            <div class="char-desc">${char.tagline || ''}</div>
+            <div class="char-actions">
+              <button class="mini-btn" onclick="event.stopPropagation(); openChatWithCharacter('${char.id}')">💬 Chat</button>
+              <button class="mini-btn" onclick="event.stopPropagation(); openEditCharacterModal('${char.id}')">✏️ Upraviť</button>
+              <button class="mini-btn" onclick="event.stopPropagation(); duplicateCharacter('${char.id}')">📋 Duplikovať</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setCharFilter(filter, el) {
+      state.charactersFilter = filter;
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      renderCharacters();
+    }
+
+    function filterCharacters() {
+      state.searchQuery = document.getElementById('search-characters').value;
+      renderCharacters();
+    }
+
+    async function toggleFavorite(charId) {
+      const char = await dbGet('characters', charId);
+      if (char) {
+        char.favorite = !char.favorite;
+        await dbPut('characters', char);
+        renderCharacters();
+      }
+    }
+
+    async function duplicateCharacter(charId) {
+      const char = await dbGet('characters', charId);
+      if (char) {
+        const copy = {
+          ...char,
+          id: 'char_' + Date.now(),
+          name: `${char.name} (Kópia)`,
+          username: `${char.username}_copy`,
+          creator: state.currentUser,
+          favorite: false
+        };
+        await dbPut('characters', copy);
+        showToast('Postava bola duplikovaná');
+        renderCharacters();
+      }
+    }
+
+    /* ==========================================================================
+       6. CHARACTER EDITOR & CREATION
+       ========================================================================== */
+    function openCreateModal() {
+      document.getElementById('editor-modal-title').innerText = 'Vytvoriť AI Postavu';
+      document.getElementById('char-edit-id').value = '';
+      document.getElementById('char-name-input').value = '';
+      document.getElementById('char-username-input').value = '';
+      document.getElementById('char-avatar-url').value = '';
+      document.getElementById('char-tagline-input').value = '';
+      document.getElementById('char-greeting-input').value = '';
+      document.getElementById('char-personality-input').value = '';
+      document.getElementById('char-backstory-input').value = '';
+      document.getElementById('char-system-input').value = '';
+      document.getElementById('char-temp-input').value = 0.7;
+      document.getElementById('char-temp-val').innerText = '0.7';
+
+      openModal('character-editor-modal');
+    }
+
+    async function openEditCharacterModal(charId) {
+      const char = await dbGet('characters', charId);
+      if (!char) return;
+
+      document.getElementById('editor-modal-title').innerText = 'Upraviť Postavu';
+      document.getElementById('char-edit-id').value = char.id;
+      document.getElementById('char-name-input').value = char.name;
+      document.getElementById('char-username-input').value = char.username;
+      document.getElementById('char-avatar-url').value = char.avatar || '';
+      document.getElementById('char-tagline-input').value = char.tagline || '';
+      document.getElementById('char-greeting-input').value = char.greeting || '';
+      document.getElementById('char-personality-input').value = char.personality || '';
+      document.getElementById('char-backstory-input').value = char.backstory || '';
+      document.getElementById('char-system-input').value = char.systemInstructions || '';
+      document.getElementById('char-temp-input').value = char.temperature || 0.7;
+      document.getElementById('char-temp-val').innerText = char.temperature || 0.7;
+
+      openModal('character-editor-modal');
+    }
+
+    async function saveCharacterFromEditor() {
+      const id = document.getElementById('char-edit-id').value || ('char_' + Date.now());
+      const name = document.getElementById('char-name-input').value.trim();
+      const username = document.getElementById('char-username-input').value.trim();
+
+      if (!name || !username) {
+        showToast('Meno a username sú povinné');
+        return;
+      }
+
+      const characterData = {
+        id,
+        name,
+        username,
+        avatar: document.getElementById('char-avatar-url').value || 'https://via.placeholder.com/150',
+        tagline: document.getElementById('char-tagline-input').value,
+        greeting: document.getElementById('char-greeting-input').value,
+        personality: document.getElementById('char-personality-input').value,
+        backstory: document.getElementById('char-backstory-input').value,
+        systemInstructions: document.getElementById('char-system-input').value,
+        temperature: parseFloat(document.getElementById('char-temp-input').value),
+        creator: state.currentUser,
+        favorite: false
+      };
+
+      await dbPut('characters', characterData);
+      closeModal('character-editor-modal');
+      showToast('Postava bola uložená');
+      renderCharacters();
+    }
+
+    /* ==========================================================================
+       7. CHAT LOGIC & ENGINE
+       ========================================================================== */
+    async function openChatWithCharacter(charId) {
+      const char = await dbGet('characters', charId);
+      if (!char) return;
+
+      state.activeCharacter = char;
+
+      // Find or create chat session
+      const existingChats = await dbGetAll('chats');
+      let chat = existingChats.find(c => c.characterId === charId && c.user === state.currentUser);
+
+      if (!chat) {
+        chat = {
+          id: 'chat_' + Date.now(),
+          characterId: charId,
+          user: state.currentUser,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          wallpaper: null
+        };
+        await dbPut('chats', chat);
+
+        // Add greeting message
+        if (char.greeting) {
+          await dbPut('messages', {
+            chatId: chat.id,
+            sender: 'ai',
+            text: char.greeting,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+
+      state.activeChatId = chat.id;
+
+      // Update UI Header
+      document.getElementById('chat-header-name').innerText = char.name;
+      document.getElementById('chat-header-avatar').src = char.avatar || 'https://via.placeholder.com/150';
+      document.getElementById('chat-header-model').innerText = `Model: ${state.selectedModel}`;
+
+      // Apply character wallpaper if any
+      applyWallpaper(chat.wallpaper);
+
+      navigate('chat');
+      await renderMessages();
+    }
+
+    async function renderMessages() {
+      const container = document.getElementById('chat-messages');
+      const messages = await dbGetByIndex('messages', 'chatId', state.activeChatId);
+
+      container.innerHTML = messages.map((msg, index) => {
+        const isUser = msg.sender === 'user';
+        const avatarUrl = isUser 
+          ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' 
+          : (state.activeCharacter?.avatar || 'https://via.placeholder.com/100');
+
+        return `
+          <div class="message-group ${isUser ? 'user' : 'ai'}" id="msg-group-${msg.id}">
+            <img src="${avatarUrl}" class="msg-avatar" alt="Avatar" />
+            <div class="msg-content-wrapper">
+              ${renderAttachmentPreview(msg.attachment)}
+              <div class="msg-bubble" id="msg-bubble-${msg.id}">${escapeHtml(msg.text)}</div>
+              <div class="msg-meta">
+                <span>${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                ${!isUser ? `
+                  <div class="msg-actions">
+                    <button class="msg-btn" onclick="speakText('${escapeForAttr(msg.text)}')">🔊 Čítať</button>
+                    <button class="msg-btn" onclick="copyMessageText('${escapeForAttr(msg.text)}')">📋 Kopírovať</button>
+                    ${index === messages.length - 1 ? `<button class="msg-btn" onclick="regenerateLastAiResponse()">🔄 Znova</button>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      scrollChatToBottom();
+    }
+
+    function renderAttachmentPreview(attachment) {
+      if (!attachment) return '';
+      if (attachment.type.startsWith('image')) {
+        return `<div class="attachment-preview-box"><img src="${attachment.dataUrl}" alt="Príloha" /></div>`;
+      } else if (attachment.type.startsWith('video')) {
+        return `<div class="attachment-preview-box"><video src="${attachment.dataUrl}" controls></video></div>`;
+      }
+      return '';
+    }
+
+    async function handleSendMessage() {
+      if (state.isGenerating) {
+        // Cancel generating
+        if (state.abortController) {
+          state.abortController.abort();
+          state.abortController = null;
+        }
+        setGeneratingState(false);
+        return;
+      }
+
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      const attachment = state.pendingAttachment;
+
+      if (!text && !attachment) return;
+
+      // Save user message
+      const userMsg = {
+        chatId: state.activeChatId,
+        sender: 'user',
+        text: text,
+        attachment: attachment ? { ...attachment } : null,
+        timestamp: new Date().toISOString()
+      };
+
+      await dbPut('messages', userMsg);
+
+      // Reset input bar
+      input.value = '';
+      input.style.height = '42px';
+      clearPendingAttachment();
+      await renderMessages();
+
+      // Trigger AI Response
+      await triggerAiResponse();
+    }
+
+    async function triggerAiResponse() {
+      setGeneratingState(true);
+
+      const messagesContainer = document.getElementById('chat-messages');
+
+      // Add Thinking indicator
+      const thinkingEl = document.createElement('div');
+      thinkingEl.id = 'ai-thinking-card';
+      thinkingEl.className = 'message-group ai';
+      thinkingEl.innerHTML = `
+        <img src="${state.activeCharacter?.avatar}" class="msg-avatar" />
+        <div class="msg-content-wrapper">
+          <div class="thinking-card">
+            <div class="thinking-spinner"></div>
+            <span>${state.activeCharacter?.name} premýšľa...</span>
+          </div>
+        </div>
+      `;
+      messagesContainer.appendChild(thinkingEl);
+      scrollChatToBottom();
+
+      try {
+        state.abortController = new AbortController();
+
+        // 1. Prepare context & memories
+        const characterMemories = await dbGetByIndex('memories', 'characterId', state.activeCharacter.id);
+        const memoryContext = characterMemories.map(m => `- ${m.content}`).join('\n');
+
+        const systemPrompt = `
+Si ${state.activeCharacter.name}.
+Osobnosť: ${state.activeCharacter.personality || ''}
+Pozadie: ${state.activeCharacter.backstory || ''}
+Inštrukcie: ${state.activeCharacter.systemInstructions || ''}
+
+Získané vedomosti a spomienky:
+${memoryContext || 'Žiadne ďalšie spomienky.'}
+
+Udržuj konverzáciu priateľskú a odpovedaj prirodzene.
+        `.trim();
+
+        // 2. Fetch recent conversation history
+        const allMsgs = await dbGetByIndex('messages', 'chatId', state.activeChatId);
+        const lastMsgs = allMsgs.slice(-10);
+
+        let aiFullText = '';
+        let targetBubble = null;
+
+        const onToken = (token) => {
+          // Remove thinking element on first token
+          const tEl = document.getElementById('ai-thinking-card');
+          if (tEl) {
+            tEl.remove();
+
+            // Create actual AI message bubble for streaming
+            const streamEl = document.createElement('div');
+            streamEl.className = 'message-group ai';
+            streamEl.id = 'streaming-msg-group';
+            streamEl.innerHTML = `
+              <img src="${state.activeCharacter?.avatar}" class="msg-avatar" />
+              <div class="msg-content-wrapper">
+                <div class="msg-bubble" id="streaming-bubble"></div>
+              </div>
+            `;
+            messagesContainer.appendChild(streamEl);
+            targetBubble = document.getElementById('streaming-bubble');
+          }
+
+          aiFullText += token;
+          if (targetBubble) {
+            targetBubble.innerText = aiFullText;
+            scrollChatToBottom();
+          }
+        };
+
+        // 3. Dispatch to chosen provider (Groq or Gemini)
+        const provider = resolveProvider();
+
+        if (provider === 'groq') {
+          aiFullText = await callGroqApi({
+            apiKey: state.groqKey,
+            model: state.selectedModel === 'auto' ? 'llama-3.3-70b-versatile' : state.selectedModel,
+            systemPrompt,
+            messages: lastMsgs,
+            temperature: state.activeCharacter.temperature || 0.7,
+            signal: state.abortController.signal,
+            onToken: state.streamingEnabled ? onToken : null
+          });
+        } else if (provider === 'gemini') {
+          aiFullText = await callGeminiApi({
+            apiKey: state.geminiKey,
+            model: state.selectedModel === 'auto' ? 'gemini-1.5-flash' : state.selectedModel,
+            systemPrompt,
+            messages: lastMsgs,
+            temperature: state.activeCharacter.temperature || 0.7,
+            signal: state.abortController.signal,
+            onToken: state.streamingEnabled ? onToken : null
+          });
+        } else {
+          // Offline Simulation / Prompt to add API keys
+          await new Promise(r => setTimeout(r, 1200));
+          aiFullText = `[Demo Režim] Ahoj! Na generovanie plnohodnotných AI odpovedí prosím vlož svoj bezplatný Groq alebo Google Gemini API kľúč v sekcii Nastavenia.`;
+        }
+
+        // Save AI message to DB
+        await dbPut('messages', {
+          chatId: state.activeChatId,
+          sender: 'ai',
+          text: aiFullText,
+          timestamp: new Date().toISOString()
+        });
+
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          showToast('Generovanie bolo zastavené.');
+        } else {
+          console.error(err);
+          showToast(`Chyba API: ${err.message || 'Nepodarilo sa vygenerovať odpoveď'}`);
+        }
+      } finally {
+        const tEl = document.getElementById('ai-thinking-card');
+        if (tEl) tEl.remove();
+        const sEl = document.getElementById('streaming-msg-group');
+        if (sEl) sEl.remove();
+
+        setGeneratingState(false);
+        await renderMessages();
+      }
+    }
+
+    function resolveProvider() {
+      if (state.groqKey && (state.selectedModel.includes('llama') || state.selectedModel.includes('mixtral') || state.selectedModel.includes('gemma') || !state.geminiKey)) {
+        return 'groq';
+      }
+      if (state.geminiKey) {
+        return 'gemini';
+      }
+      return 'demo';
+    }
+
+    function setGeneratingState(isGen) {
+      state.isGenerating = isGen;
+      const sendBtn = document.getElementById('chat-send-btn');
+      const sendIcon = document.getElementById('send-icon');
+      const stopIcon = document.getElementById('stop-icon');
+
+      if (isGen) {
+        sendIcon.classList.add('hidden');
+        stopIcon.classList.remove('hidden');
+      } else {
+        sendIcon.classList.remove('hidden');
+        stopIcon.classList.add('hidden');
+      }
+    }
+
+    async function regenerateLastAiResponse() {
+      const messages = await dbGetByIndex('messages', 'chatId', state.activeChatId);
+      if (messages.length > 0 && messages[messages.length - 1].sender === 'ai') {
+        const lastMsg = messages[messages.length - 1];
+        await dbDelete('messages', lastMsg.id);
+        await renderMessages();
+        await triggerAiResponse();
+      }
+    }
+
+    /* ==========================================================================
+       8. API CONNECTORS (Groq & Gemini Streaming)
+       ========================================================================== */
+    async function callGroqApi({ apiKey, model, systemPrompt, messages, temperature, signal, onToken }) {
+      const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+
+      const formattedMessages = [
+        { role: 'system', content: systemPrompt }
+      ];
+
+      for (const m of messages) {
+        if (m.attachment && m.attachment.type.startsWith('image')) {
+          // Groq Vision format
+          formattedMessages.push({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: [
+              { type: 'text', text: m.text || 'Obrázok' },
+              { type: 'image_url', image_url: { url: m.attachment.dataUrl } }
+            ]
+          });
+        } else {
+          formattedMessages.push({
+            role: m.sender === 'user' ? 'user' : 'assistant',
+            content: m.text || ''
+          });
+        }
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model || 'llama-3.3-70b-versatile',
+          messages: formattedMessages,
+          temperature: temperature || 0.7,
+          stream: !!onToken
+        }),
+        signal
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error?.message || `Groq HTTP ${response.status}`);
+      }
+
+      if (onToken) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+          for (const line of lines) {
+            const jsonStr = line.replace('data: ', '').trim();
+            if (jsonStr === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const delta = parsed.choices?.[0]?.delta?.content || '';
+              if (delta) {
+                fullText += delta;
+                onToken(delta);
+              }
+            } catch (e) {}
+          }
+        }
+        return fullText;
+      } else {
+        const json = await response.json();
+        return json.choices?.[0]?.message?.content || '';
+      }
+    }
+
+    async function callGeminiApi({ apiKey, model, systemPrompt, messages, temperature, signal, onToken }) {
+      const cleanModel = (model || 'gemini-1.5-flash').replace('models/', '');
+      const action = onToken ? 'streamGenerateContent?alt=sse' : 'generateContent';
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:${action}&key=${apiKey}`;
+
+      const contents = [];
+      for (const m of messages) {
+        const parts = [];
+        if (m.attachment && m.attachment.type.startsWith('image')) {
+          const base64Data = m.attachment.dataUrl.split(',')[1];
+          parts.push({
+            inline_data: {
+              mime_type: m.attachment.type,
+              data: base64Data
+            }
+          });
+        }
+        if (m.text) {
+          parts.push({ text: m.text });
+        }
+        contents.push({
+          role: m.sender === 'user' ? 'user' : 'model',
+          parts
+        });
+      }
+
+      const payload = {
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents,
+        generationConfig: {
+          temperature: temperature || 0.7
+        }
+      };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error?.message || `Gemini HTTP ${response.status}`);
+      }
+
+      if (onToken) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+          for (const line of lines) {
+            const jsonStr = line.replace('data: ', '').trim();
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const partText = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              if (partText) {
+                fullText += partText;
+                onToken(partText);
+              }
+            } catch (e) {}
+          }
+        }
+        return fullText;
+      } else {
+        const json = await response.json();
+        return json.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      }
+    }
+
+    /* ==========================================================================
+       9. PROVIDER DISCOVERY & TESTING
+       ========================================================================== */
+    async function testGroqConnection(notify = true) {
+      const key = document.getElementById('groq-api-key').value.trim();
+      const badge = document.getElementById('groq-status-badge');
+
+      if (!key) {
+        badge.className = 'status-badge unconfigured';
+        badge.innerText = 'Nenastavené';
+        return;
+      }
+
+      badge.className = 'status-badge unconfigured';
+      badge.innerText = 'Overujem...';
+
+      try {
+        const res = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': `Bearer ${key}` }
+        });
+        if (!res.ok) throw new Error('Neplatný API kľúč');
+        const data = await res.json();
+
+        state.groqKey = key;
+        state.groqModels = data.data || [];
+        await dbPut('settings', { key: 'groqKey', value: key });
+
+        badge.className = 'status-badge connected';
+        badge.innerText = 'Pripojené ✓';
+        if (notify) showToast(`Groq úspešne pripojený (${state.groqModels.length} modelov)`);
+        populateModelDropdown();
+      } catch (err) {
+        badge.className = 'status-badge error';
+        badge.innerText = 'Chyba kľúča';
+        if (notify) showToast('Groq API kľúč je neplatný');
+      }
+    }
+
+    async function testGeminiConnection(notify = true) {
+      const key = document.getElementById('gemini-api-key').value.trim();
+      const badge = document.getElementById('gemini-status-badge');
+
+      if (!key) {
+        badge.className = 'status-badge unconfigured';
+        badge.innerText = 'Nenastavené';
+        return;
+      }
+
+      badge.className = 'status-badge unconfigured';
+      badge.innerText = 'Overujem...';
+
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+        if (!res.ok) throw new Error('Neplatný Google API kľúč');
+        const data = await res.json();
+
+        state.geminiKey = key;
+        state.geminiModels = data.models || [];
+        await dbPut('settings', { key: 'geminiKey', value: key });
+
+        badge.className = 'status-badge connected';
+        badge.innerText = 'Pripojené ✓';
+        if (notify) showToast(`Gemini úspešne pripojené (${state.geminiModels.length} modelov)`);
+        populateModelDropdown();
+      } catch (err) {
+        badge.className = 'status-badge error';
+        badge.innerText = 'Chyba kľúča';
+        if (notify) showToast('Google Gemini API kľúč je neplatný');
+      }
+    }
+
+    function populateModelDropdown() {
+      const select = document.getElementById('global-model-select');
+      const charSelect = document.getElementById('char-model-select');
+      
+      let html = `<option value="auto">Auto Provider (Podľa dostupnosti)</option>`;
+
+      if (state.groqModels.length > 0) {
+        html += `<optgroup label="Groq Modely">`;
+        state.groqModels.forEach(m => {
+          html += `<option value="${m.id}" ${state.selectedModel === m.id ? 'selected' : ''}>Groq: ${m.id}</option>`;
+        });
+        html += `</optgroup>`;
+      }
+
+      if (state.geminiModels.length > 0) {
+        html += `<optgroup label="Google Gemini Modely">`;
+        state.geminiModels.forEach(m => {
+          const cleanId = m.name.replace('models/', '');
+          html += `<option value="${cleanId}" ${state.selectedModel === cleanId ? 'selected' : ''}>Gemini: ${m.displayName || cleanId}</option>`;
+        });
+        html += `</optgroup>`;
+      }
+
+      select.innerHTML = html;
+      charSelect.innerHTML = `<option value="inherit">Podľa globálneho nastavenia</option>` + html;
+    }
+
+    async function saveGlobalModel(val) {
+      state.selectedModel = val;
+      await dbPut('settings', { key: 'selectedModel', value: val });
+      showToast(`Model nastavený na: ${val}`);
+    }
+
+    async function clearApiKey(provider) {
+      if (provider === 'groq') {
+        state.groqKey = '';
+        document.getElementById('groq-api-key').value = '';
+        await dbDelete('settings', 'groqKey');
+        document.getElementById('groq-status-badge').className = 'status-badge unconfigured';
+        document.getElementById('groq-status-badge').innerText = 'Nenastavené';
+      } else {
+        state.geminiKey = '';
+        document.getElementById('gemini-api-key').value = '';
+        await dbDelete('settings', 'geminiKey');
+        document.getElementById('gemini-status-badge').className = 'status-badge unconfigured';
+        document.getElementById('gemini-status-badge').innerText = 'Nenastavené';
+      }
+      populateModelDropdown();
+      showToast('Kľúč bol vymazaný');
+    }
+
+    /* ==========================================================================
+       10. TEXT-TO-SPEECH (Web Speech API)
+       ========================================================================== */
+    function initSpeechSynthesis() {
+      if ('speechSynthesis' in window) {
+        const updateVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          const select = document.getElementById('tts-voice-select');
+          select.innerHTML = voices.map((v, i) => `
+            <option value="${i}">${v.name} (${v.lang})</option>
+          `).join('');
+        };
+        updateVoices();
+        window.speechSynthesis.onvoiceschanged = updateVoices;
+      }
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Váš prehliadač nepodporuje prevod textu na reč.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = state.ttsRate || 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const voiceIndex = document.getElementById('tts-voice-select').value;
+      if (voices[voiceIndex]) {
+        utterance.voice = voices[voiceIndex];
+      }
+
+      window.speechSynthesis.speak(utterance);
+      showToast('Prehrávam hlas postavy 🔊');
+    }
+
+    function updateTtsRate(rate) {
+      state.ttsRate = parseFloat(rate);
+      document.getElementById('tts-rate-val').innerText = `${rate}x`;
+      dbPut('settings', { key: 'ttsRate', value: state.ttsRate });
+    }
+
+    /* ==========================================================================
+       11. ATTACHMENTS & MEDIA PICKER
+       ========================================================================== */
+    function openAttachmentMenu() {
+      openModal('attachment-modal');
+    }
+
+    function triggerFileInput(acceptType) {
+      closeModal('attachment-modal');
+      const input = document.getElementById('media-file-input');
+      input.accept = acceptType;
+      input.click();
+    }
+
+    function handleFileSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        state.pendingAttachment = {
+          type: file.type,
+          name: file.name,
+          size: file.size,
+          dataUrl: event.target.result
+        };
+
+        const previewContainer = document.getElementById('pending-attachment');
+        const slot = document.getElementById('pending-preview-slot');
+        const nameLabel = document.getElementById('pending-filename');
+
+        nameLabel.innerText = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+        if (file.type.startsWith('image')) {
+          slot.innerHTML = `<img src="${event.target.result}" />`;
+        } else {
+          slot.innerHTML = `🎥`;
+        }
+
+        previewContainer.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearPendingAttachment() {
+      state.pendingAttachment = null;
+      document.getElementById('pending-attachment').classList.add('hidden');
+      document.getElementById('media-file-input').value = '';
+    }
+
+    /* ==========================================================================
+       12. WALLPAPERS & CUSTOMIZATION
+       ========================================================================== */
+    function openWallpaperModal() {
+      openModal('wallpaper-modal');
+    }
+
+    function handleWallpaperUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const dataUrl = e.target.result;
+        applyWallpaper(dataUrl);
+
+        // Save to active chat
+        if (state.activeChatId) {
+          const chat = await dbGet('chats', state.activeChatId);
+          if (chat) {
+            chat.wallpaper = dataUrl;
+            await dbPut('chats', chat);
+          }
+        }
+        showToast('Tapeta bola aktualizovaná');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyWallpaper(url) {
+      const chatScreen = document.getElementById('chat-screen');
+      if (url) {
+        chatScreen.style.backgroundImage = `url(${url})`;
+      } else {
+        chatScreen.style.backgroundImage = 'none';
+      }
+    }
+
+    async function removeActiveWallpaper() {
+      applyWallpaper(null);
+      if (state.activeChatId) {
+        const chat = await dbGet('chats', state.activeChatId);
+        if (chat) {
+          chat.wallpaper = null;
+          await dbPut('chats', chat);
+        }
+      }
+      closeModal('wallpaper-modal');
+      showToast('Tapeta odstránená');
+    }
+
+    function updateWallpaperOverlay(val) {
+      document.getElementById('wp-overlay-val').innerText = `${val}%`;
+      document.getElementById('chat-wallpaper-overlay').style.background = `rgba(9, 10, 15, ${val / 100})`;
+    }
+
+    function updateWallpaperBlur(val) {
+      document.getElementById('wp-blur-val').innerText = `${val}px`;
+      document.getElementById('chat-wallpaper-overlay').style.backdropFilter = `blur(${val}px)`;
+    }
+
+    /* ==========================================================================
+       13. CHARACTER MEMORY & CONTEXT TRAINING
+       ========================================================================== */
+    async function openTrainModal() {
+      if (!state.activeCharacter) return;
+      await renderCharacterMemories();
+      openModal('train-modal');
+    }
+
+    async function renderCharacterMemories() {
+      const container = document.getElementById('character-memories-list');
+      const memories = await dbGetByIndex('memories', 'characterId', state.activeCharacter.id);
+
+      if (memories.length === 0) {
+        container.innerHTML = `<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px;">Žiadne uložené spomienky pre túto postavu.</div>`;
+        return;
+      }
+
+      container.innerHTML = memories.map(m => `
+        <div style="background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:8px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px;">${escapeHtml(m.content)}</span>
+          <button class="icon-btn" style="width:24px; height:24px;" onclick="deleteMemory(${m.id})">✕</button>
+        </div>
+      `).join('');
+    }
+
+    async function addMemoryToActiveCharacter() {
+      const input = document.getElementById('new-memory-input');
+      const content = input.value.trim();
+      if (!content) return;
+
+      await dbPut('memories', {
+        characterId: state.activeCharacter.id,
+        content,
+        createdAt: new Date().toISOString()
+      });
+
+      input.value = '';
+      await renderCharacterMemories();
+      showToast('Spomienka uložená do pamäte postavy');
+    }
+
+    async function deleteMemory(id) {
+      await dbDelete('memories', id);
+      await renderCharacterMemories();
+      showToast('Spomienka odstránená');
+    }
+
+    /* ==========================================================================
+       14. CHATS LIST VIEW
+       ========================================================================== */
+    async function renderChatsList() {
+      const container = document.getElementById('chats-list-container');
+      const chats = await dbGetAll('chats');
+      const characters = await dbGetAll('characters');
+
+      const userChats = chats.filter(c => c.user === state.currentUser);
+
+      if (userChats.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:50px 20px; color:var(--text-muted);">
+            <p>Zatiaľ nemáte žiadne aktívne konverzácie.</p>
+            <button class="btn btn-primary" style="margin-top:14px; display:inline-flex; width:auto;" onclick="navigate('home')">Vybrať postavu</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = (await Promise.all(userChats.map(async chat => {
+        const char = characters.find(c => c.id === chat.characterId) || { name: 'Neznáma postava', avatar: '' };
+        const msgs = await dbGetByIndex('messages', 'chatId', chat.id);
+        const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1].text : 'Začiatok konverzácie';
+
+        return `
+          <div class="char-card" style="margin-bottom:10px;" onclick="openChatWithCharacter('${chat.characterId}')">
+            <img src="${char.avatar || 'https://via.placeholder.com/150'}" class="char-avatar" />
+            <div class="char-info">
+              <div class="char-name-row">
+                <span class="char-name">${char.name}</span>
+                <span style="font-size:11px; color:var(--text-muted);">${new Date(chat.updatedAt || chat.createdAt).toLocaleDateString()}</span>
+              </div>
+              <div class="char-desc" style="-webkit-line-clamp: 1;">${escapeHtml(lastMsg)}</div>
+            </div>
+            <button class="icon-btn" style="width:32px; height:32px;" onclick="event.stopPropagation(); deleteChatPrompt('${chat.id}')">🗑️</button>
+          </div>
+        `;
+      }))).join('');
+    }
+
+    async function deleteChatPrompt(chatId) {
+      if (confirm('Naozaj chcete vymazať túto konverzáciu?')) {
+        await dbDelete('chats', chatId);
+        const msgs = await dbGetByIndex('messages', 'chatId', chatId);
+        for (const m of msgs) await dbDelete('messages', m.id);
+        renderChatsList();
+        showToast('Konverzácia bola vymazaná');
+      }
+    }
+
+    async function clearAllChatsPrompt() {
+      if (confirm('Vymazať celú históriu všetkých chatov?')) {
+        const chats = await dbGetAll('chats');
+        for (const c of chats) {
+          if (c.user === state.currentUser) {
+            await dbDelete('chats', c.id);
+            const msgs = await dbGetByIndex('messages', 'chatId', c.id);
+            for (const m of msgs) await dbDelete('messages', m.id);
+          }
+        }
+        renderChatsList();
+        showToast('História bola vymazaná');
+      }
+    }
+
+    /* ==========================================================================
+       15. UTILITIES & MODAL HELPERS
+       ========================================================================= */
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.querySelector('span').innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function handleChatKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    }
+
+    function autoGrowTextarea(el) {
+      el.style.height = '42px';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function scrollChatToBottom() {
+      const container = document.getElementById('chat-messages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function toggleTheme(isDark) {
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleSetting(key, val) {
+      state[key] = val;
+      dbPut('settings', { key, value: val });
+    }
+
+    function handleImageUploadToInput(fileInput, targetInputId) {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById(targetInputId).value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function copyMessageText(text) {
+      navigator.clipboard.writeText(text);
+      showToast('Skopírované do schránky');
+    }
+
+    async function exportDataBackup() {
+      const characters = await dbGetAll('characters');
+      const chats = await dbGetAll('chats');
+      const memories = await dbGetAll('memories');
+
+      const backup = { characters, chats, memories, exportedAt: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Aetheria_Backup_${Date.now()}.json`;
+      a.click();
+      showToast('Záloha bola stiahnutá');
+    }
+
+    async function wipeEntireDatabasePrompt() {
+      if (confirm('POZOR: Naozaj chcete vymazať celú lokálnu databázu vrátane postáv a nastavení?')) {
+        indexedDB.deleteDatabase(DB_NAME);
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[m]);
+    }
+
+    function escapeForAttr(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+    }
+  </script>
 </body>
 </html>
